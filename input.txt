@@ -1,0 +1,10 @@
+.DATA
+STACK
+
+.DATA
+STACK my_stack
+
+.LOGIC
+q0] MOVE (A, q1), (B, q2)
+q1] LEFT (X, q3), (Y, q4)
+q2] RIGHT (C, q5)
