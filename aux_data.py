@@ -53,3 +53,13 @@ class Queue():
 
     def __str__(self):
         return str(self.queue)
+    
+class Tape():
+    def __init__(self):
+        self.tape = [0]
+        self.position = 0
+
+class Tape():
+    def __init__(self):
+        self.tape = [[0]]
+        self.position = (0, 0)
