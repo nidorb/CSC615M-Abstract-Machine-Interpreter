@@ -74,6 +74,7 @@ class AbstractMachineParser:
         # <SOURCE_STATE_NAME>] COMMAND(<tape_name>) (<SYMBOL_1>/<REPLACEMENT_SYMBOL_1>,<DESTINATION_STATE_NAME_1>)
         #                         state       command              transitions
         tape_match = re.match(r"(\w+)\]\s+([\w\s]+(?:\(\w+\))?)\s+((?:\([\w#]+/[\w#],\w+\)(?:,\s*)?)*)$", line)
+        
         arg = None
         # check for non-tape logic
         if logic_match:
@@ -132,9 +133,9 @@ class AbstractMachineParser:
             if self.initial_state is None:
                 self.initial_state = state
                 
-            parsed_transitions = self.parse_transitions(transitions) if transitions else {}
+            parsed_transitions = self.parse_tape_transitions(transitions) if transitions else {}
             
-            self.logic[state] = {"command": command, "transitions": transitions}
+            self.logic[state] = {"command": command, "transitions": parsed_transitions}
             
         else:
             print(f"Error: Invalid logic syntax at line {line_number}: {line}")
@@ -153,14 +154,18 @@ class AbstractMachineParser:
 
         return parsed
     
-    def parse_transitions(self, transitions):
+    def parse_tape_transitions(self, transitions):
         parsed = {}
-        for transition in transitions.split(","):
-            transition = transition.strip()
-            match = re.match(r"\(([^/,]+)/?([^/]*)?,(\w+)\)", transition)
-            if match:
-                symbol, replacement, destination = match.groups()
-                parsed[symbol] = {"replacement": replacement or None, "destination": destination}
+
+        # Updated regex to capture read symbol, replacement symbol, and next state
+        pattern = r"\(([\w#]+)/([\w#]+),\s*(\w+)\)"  
+
+        # Find all matches
+        matches = re.findall(pattern, transitions)
+
+        for symbol, replacement, state in matches:
+            parsed[symbol] = (replacement, state)  # Store as a tuple
+
         return parsed
 
     def display(self):
@@ -179,16 +184,24 @@ class AbstractMachineParser:
 input_text = """
 .DATA
 STACK S1
-
+QUEUE Q1
+TAPE T1
 .LOGIC
 A] WRITE(S1) (1,B)
-B] SCAN (0,C), (1,D)
-C] WRITE(S1) (#,B)
-D] READ(S1) (#,E)
-E] SCAN (1,D), (#,F)
-
+B] SCAN (0,C), (1,D), (2,E)
+C] SCAN LEFT (0,C), (1,reject)
+D] SCAN RIGHT (b,D), (c,F), (#,F)
+E] PRINT (0,C), (1,D), (2,E)
+F] READ(S1) (#,E)
+G] LEFT(T1) (0/0,C), (Y/Y,C), (X/X,A)
+H] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
+I] UP(T1) (0/0,B), (Y/Y,B), (1/Y,C)
+K] DOWN(T1) (0/0,C), (Y/Y,C), (X/X,A)
 """
 
 parser = AbstractMachineParser(input_text)
 parser.display()
-#print("Test:", parser.logic["A"]["command"])
+initial = parser.initial_state
+input = "1"
+print(parser.logic[initial]["transitions"].get(input))
+print("Test:", parser.logic["A"]["command"])
