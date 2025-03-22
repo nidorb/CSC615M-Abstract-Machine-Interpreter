@@ -1,32 +1,54 @@
 from parser import MachineParser
+from aux_data import InputTape
+import copy
 
-class AbstractMachineSimulator:
-    def __init__(self, input_text):
-        self.parser = MachineParser(input_text)
+class MachineSimulator:
+    def __init__(self, machine_def, input_tape):
+        self.parser = MachineParser(machine_def)
         self.memory = self.parser.memory
         self.logic = self.parser.logic
-        self.initial_state = self.parser.initial_state
+        self.state = self.parser.initial_state
         self.halt = False
-        self.accept = False
+        self.accept = False            
+        self.input_tape = InputTape(input_tape)
 
-# # Example Usage
-# input_text = """
-# .DATA
-# STACK S1
-# QUEUE Q1
-# TAPE T1
-# .LOGIC
-# A] WRITE(S1) (1,B)
-# B] SCAN (0,C), (1,D), (2,E)
-# C] SCAN LEFT (0,C), (1,reject)
-# D] SCAN RIGHT (b,D), (c,F), (#,F)
-# E] PRINT (0,C), (1,D), (2,E)
-# F] READ(S1) (#,E)
-# G] LEFT(T1) (0/0,C), (Y/Y,C), (X/X,A)
-# H] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
-# I] UP(T1) (0/0,B), (Y/Y,B), (1/Y,C)
-# K] DOWN(T1) (0/0,C), (Y/Y,C), (X/X,A)
-# """
+        self.timelines = [self]
+        self.accepted_timeline = None
+        
+    def step(self):
+        active_timelines = [t for t in self.timelines if not t.halt]
+        new_timelines = []
+        
+        for machine in active_timelines:
+            if machine.halt:
+                continue
 
-# parser = AbstractMachineSimulator(input_text)
-# print(parser.memory)
+            element = machine.input_tape.get_element()
+            command = machine.logic[machine.state]["command"]
+            transitions = machine.logic[machine.state]["transitions"]
+                        
+            if command in {"SCAN", "SCAN RIGHT"}:
+                if not machine.input_tape.can_move("RIGHT"): #checks if tape is at #
+                    machine.input_tape.add_right()
+                
+                machine.input_tape.move_head("RIGHT")
+                element = machine.input_tape.get_element()
+                
+                #checks all dest state of element
+                #fix
+                if element in transitions:
+                    possible_states = transitions[element]
+                    
+                    #NFA
+                    if len(possible_states) > 1: 
+                        for state in possible_states[1:]:
+                            new_machine = copy.deepcopy(machine)
+                            new_machine.state = state
+                            new_timelines.append(new_machine)
+                    
+                    #DFA
+                    machine.state = possible_states[0]
+
+
+        self.timelines = [t for t in (self.timelines + new_timelines) if not t.halt]
+

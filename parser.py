@@ -6,12 +6,11 @@ class MachineParser:
         self.input_text = input_text.splitlines()
         self.memory = {}
         self.logic = {}
+        self.transitions=[]
         self.initial_state = None
         self.data_keywords = {"STACK", "QUEUE", "TAPE", "2D_TAPE"}
         self.logic_keywords = {"SCAN", "PRINT", "SCAN RIGHT", "SCAN LEFT", r"READ\((\w+\))", r"WRITE\((\w+\))"}
         self.tape_keywords = {r"LEFT\(\w+\)", r"RIGHT\(\w+\)", r"UP\(\w+\)", r"DOWN\(\w+\)"}
-        self.state_keywords = {"accept", "reject"}
-        self.transitions=[]
         
         self.parse()
 
@@ -103,7 +102,7 @@ class MachineParser:
 
             parsed_transitions = self.parse_logic_transitions(transitions)
             
-            self.logic[state] = {"command": command, "Memory Object": arg, "transitions": parsed_transitions}
+            self.logic[state] = {"command": command, "memory_object": arg, "transitions": parsed_transitions}
             
         # check for tape logic
         elif tape_match:
@@ -151,7 +150,9 @@ class MachineParser:
         matches = re.findall(pattern, transitions)
         
         for symbol, state in matches:
-            parsed[symbol] = state
+            if symbol not in parsed:
+                parsed[symbol] = []
+            parsed[symbol].append(state)
 
         return parsed
     
