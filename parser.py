@@ -1,7 +1,7 @@
 import re
 from aux_data import Stack, Queue, Tape
 
-class AbstractMachineParser:
+class MachineParser:
     def __init__(self, input_text):
         self.input_text = input_text.splitlines()
         self.memory = {}
@@ -141,6 +141,7 @@ class AbstractMachineParser:
             print(f"Error: Invalid logic syntax at line {line_number}: {line}")
             exit(1)
     
+    # parses transitions if logic
     def parse_logic_transitions(self, transitions):
         parsed = {}
         
@@ -154,6 +155,7 @@ class AbstractMachineParser:
 
         return parsed
     
+    # parses transitions if tapes
     def parse_tape_transitions(self, transitions):
         parsed = {}
 
@@ -168,6 +170,7 @@ class AbstractMachineParser:
 
         return parsed
 
+    #displays info
     def display(self):
         print("\nAuxiliary Memory:")
         
@@ -179,29 +182,3 @@ class AbstractMachineParser:
             print(f"  {state} -> {details}")
 
         print(f"\nInitial State: {self.initial_state}")
-
-# Example Usage
-input_text = """
-.DATA
-STACK S1
-QUEUE Q1
-TAPE T1
-.LOGIC
-A] WRITE(S1) (1,B)
-B] SCAN (0,C), (1,D), (2,E)
-C] SCAN LEFT (0,C), (1,reject)
-D] SCAN RIGHT (b,D), (c,F), (#,F)
-E] PRINT (0,C), (1,D), (2,E)
-F] READ(S1) (#,E)
-G] LEFT(T1) (0/0,C), (Y/Y,C), (X/X,A)
-H] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
-I] UP(T1) (0/0,B), (Y/Y,B), (1/Y,C)
-K] DOWN(T1) (0/0,C), (Y/Y,C), (X/X,A)
-"""
-
-parser = AbstractMachineParser(input_text)
-parser.display()
-initial = parser.initial_state
-input = "1"
-print(parser.logic[initial]["transitions"].get(input))
-print("Test:", parser.logic["A"]["command"])
