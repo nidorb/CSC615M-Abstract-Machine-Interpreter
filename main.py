@@ -4,37 +4,43 @@ from aux_data import InputTape
 if __name__ == '__main__':
     machine_def = """
     .LOGIC
-    q0] SCAN (0,q0), (0,q2), (1,q1)
-    q1] SCAN (0,q0), (0,q1), (1,q2)
-    q2] SCAN (0,q0), (1,q1), (2,accept)
-
+    A] SCAN RIGHT (0,A), (1,B), (#,accept), (1,C)
+    B] SCAN LEFT (0,C), (1,reject)
+    C] SCAN RIGHT (1,A)
     """
 
-    input_tape = "100"
+    input_tape = "00010101"
 
 
     machine = MachineSimulator(machine_def, input_tape)
-    machine.step()
-    machine.step()
-    machine.step()
+    halt = False
+        
+    while machine.active_timelines and not halt:  # Run while there are active timelines
+        machine.step()
+        
+        for x in machine.timelines:
+            if x.halt:  # Only check machines that have halted
+                if x.accept == True:
+                    print("Accepted Machine:", x)
+                    halt = True
+                    break  # Stop execution if accepted
+                elif x.reject == True:
+                    print("Rejected Machine:", x)
+                    halt = True
+                    break
+
+    print("Number of Timelines: ", len(machine.timelines))
+    
+    # machine.step()
 
     
     for x in machine.timelines:
         print("\n\n", x)
         print("State: ", x.state)
-    #     print("Mem: ", x.memory)
-    #     print("Logic: ", x.logic)
-    
-
-
-    
-    # machine.step()
-    # machine.step()
-    # machine.step()
-    # machine.step()
-    # print(machine.logic)
-
-    # print(machine.memory)
-    # print(machine.logic[machine.initial_state]["transitions"].get(machine.input_tape.get_element()))
-    # print(machine.initial_state)
-    # print(machine.input_tape)
+        print("Halted: ", x.halt)
+        print("Accepted: ", x.accept)
+        print("Hisotry: ", x.history)
+        
+        
+    # print("\n\ntimeline", machine.timelines)
+    # print("active timelines", machine.active_timelines)
