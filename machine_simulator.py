@@ -1,5 +1,5 @@
 from parser import MachineParser
-from aux_data import InputTape
+from aux_data import Stack, Queue, Tape, InputTape
 import copy
 
 class MachineSimulator:
@@ -11,13 +11,13 @@ class MachineSimulator:
         
         self.halt = False
         self.accept = False
-        self.reject = False
         
         self.input_tape = InputTape(input_tape)
         
         self.history = [self.state]
         self.timelines = [self]
         self.active_timelines = [self]
+        self.accepted_timelines = []
         
         self.output = []
         
@@ -32,6 +32,7 @@ class MachineSimulator:
             element = machine.input_tape.get_element() # read input
             command = machine.logic[machine.state]["command"]
             transitions = machine.logic[machine.state]["transitions"]
+            memory_object = machine.logic[machine.state]["memory_object"]
                         
             if command in {"SCAN", "SCAN RIGHT", "SCAN LEFT"}:
                 if command == "SCAN LEFT":
@@ -67,25 +68,40 @@ class MachineSimulator:
                 else:
                     print(f"[ERROR] No transition found for element '{element}'. Halting.")
                     machine.history.append("reject")
+                    machine.state = "reject"
                     machine.halt = True
-
-            elif command in {"READ", "WRITE"}:
-                continue
                 
-            elif command == "PRINT":
+            elif command in {"PRINT", "READ", "WRITE"}:
                 for x in transitions:
                     for state in transitions[x]:
                         new_machine = copy.deepcopy(machine)
                         new_machine.state = state
-                        new_machine.history.append(state)
-                        new_machine.output.append(x)
+
+                        if command == "PRINT":
+                            new_machine.output.append(x)
+                        else:
+                            ds = new_machine.memory[memory_object]
+                            if command == "WRITE":
+                                ds.push(x)
+
+                            elif command == "READ":
+                                if ds.peek() == None or ds.peek() != x:
+                                    new_machine.halt = True
+                                    new_machine.state = "reject"
+
+                                else:
+                                    ds.pop()
+                                    
+                        new_machine.history.append(new_machine.state)
                         new_machine.handle_state_termination()
                         new_timelines.append(new_machine)
+                        
                 
                 self.timelines.remove(machine)
         
         self.timelines += new_timelines
         self.active_timelines = [t for t in self.timelines if not t.halt]
+        self.accepted_timelines = [t for t in self.timelines if t.accept]
 
     #change if reject/accept completely halt
     def handle_state_termination(self):
@@ -93,9 +109,18 @@ class MachineSimulator:
             self.accept = True
             self.halt = True
         elif self.state == "reject":
-            self.reject = True
             self.halt = True
         elif self.state not in self.logic:
             self.halt = True
+            self.state = "reject"
+            print("Reject")
             self.history.append("reject")
+            
+    def handle_read(self, ds, x):
+        if ds.pop() == None or ds.peek() != x:
+            print("Error: Empty Stack or Stack cannot be Read")
+            self.halt = True
+            self.state = "reject"
+            self.history.append("reject")
+        
 

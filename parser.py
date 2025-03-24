@@ -95,6 +95,9 @@ class MachineParser:
                 if arg not in self.memory:
                     print(f"Error: Memory object does not exist at line {line_number}: {line}")
                     exit(1)
+                elif isinstance(self.memory[arg], Tape):
+                    print(f"Error: Memory object is not a Stack or Queue at line {line_number}: {line}")
+                    exit(1)
                 
             #initializes first line as initial state
             if self.initial_state is None:
@@ -134,7 +137,7 @@ class MachineParser:
                 
             parsed_transitions = self.parse_tape_transitions(transitions) if transitions else {}
             
-            self.logic[state] = {"command": command, "transitions": parsed_transitions}
+            self.logic[state] = {"command": command, "memory_object": arg, "transitions": parsed_transitions}
             
         else:
             print(f"Error: Invalid logic syntax at line {line_number}: {line}")

@@ -22,13 +22,7 @@ class Stack():
             
     def view_ds(self):
         return self.stack
-
-    def __len__(self):
-        return len(self.stack)
-
-    def __str__(self):
-        return str(self.stack)
-
+    
 class Queue():
     def __init__(self):
         self.queue = []
@@ -36,10 +30,10 @@ class Queue():
     def is_empty(self):
         return len(self.queue) == 0
 
-    def enqueue(self, item):
+    def push(self, item):
         self.queue.append(item)
-        
-    def dequeue(self):
+
+    def pop(self):
         if self.is_empty():
             return None
         else:
@@ -53,12 +47,6 @@ class Queue():
         
     def view_ds(self):
         return self.queue
-
-    def __len__(self):
-        return len(self.queue)
-
-    def __str__(self):
-        return str(self.queue)
     
 class Tape():
     def __init__(self):

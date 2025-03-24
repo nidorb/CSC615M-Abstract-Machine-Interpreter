@@ -3,22 +3,16 @@ from aux_data import InputTape
 
 if __name__ == '__main__':
     machine_def = """
-    #NFA for detecting substring "101"
-    
-    .DATA
-    STACK S1
-    QUEUE Q1
-    TAPE T1
-    .LOGIC
-    E] PRINT (0,A), (0,B), (1,A)
-    A] SCAN (0,A), (1,B), (1,F)
-    B] SCAN (0,F), (1,C)
-    C] SCAN (0,accept), (1,E)
-    F] PRINT (0,A)
+.DATA
+TAPE T1
+.LOGIC
+A] RIGHT(T1) (0/X,B), (Y/Y,D), (1/1,reject)
+B] RIGHT(T1) (0/0,B), (Y/Y,B), (1/Y,C)
+C] LEFT(T1) (0/0,C), (Y/Y,C), (X/X,A)
+D] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
+"""
 
-    """
-
-    input_tape = "01"
+    input_tape = "aaaaabbbbcccc"
 
 
     machine = MachineSimulator(machine_def, input_tape)
@@ -26,22 +20,20 @@ if __name__ == '__main__':
             
     while machine.active_timelines and not halt:  # Run while there are active timelines
         machine.step()
-        
         for x in machine.timelines:
             if x.halt:  # Only check machines that have halted
                 if x.accept == True:
                     print("Accepted Machine:", x)
                     halt = True
                     break  # Stop execution if accepted
-                elif x.reject == True:
-                    print("Rejected Machine:", x)
-                    halt = True
-                    break
 
     
     for x in machine.timelines:
         print("\n\n", x)
-        print("DS: ", x.memory)
+        print("DS1: ", x.memory["S1"])
+        print("DS2: ", x.memory["S2"])
+        print("DS2: ", x.memory["Q1"])
+
         print("State: ", x.state)
         print("Halted: ", x.halt)
         print("Accepted: ", x.accept)
@@ -51,4 +43,5 @@ if __name__ == '__main__':
         
         
     # print("\n\ntimeline", machine.timelines)
-    # print("active timelines", machine.active_timelines)
+    print("active timelines", machine.active_timelines)
+    print("accepteded timelines", machine.accepted_timelines)
