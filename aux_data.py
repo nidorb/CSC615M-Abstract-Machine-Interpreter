@@ -55,6 +55,7 @@ class Tape():
 
 class InputTape:
     def __init__(self, input_string: str):
+        self.name = None
         self.tape = ['#'] + list(input_string) + ['#']
         self.head = 0
         

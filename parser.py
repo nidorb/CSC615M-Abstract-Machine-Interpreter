@@ -1,13 +1,15 @@
 import re
-from aux_data import Stack, Queue, Tape
+from aux_data import Stack, Queue, Tape, InputTape
 
 class MachineParser:
-    def __init__(self, input_text):
+    def __init__(self, input_text, input_tape):
         self.input_text = input_text.splitlines()
         self.memory = {}
         self.logic = {}
         self.transitions=[]
         self.initial_state = None
+        self.input_tape = InputTape(input_tape)
+        
         self.data_keywords = {"STACK", "QUEUE", "TAPE", "2D_TAPE"}
         self.logic_keywords = {"SCAN", "PRINT", "SCAN RIGHT", "SCAN LEFT", r"READ\((\w+\))", r"WRITE\((\w+\))"}
         self.tape_keywords = {r"LEFT\(\w+\)", r"RIGHT\(\w+\)", r"UP\(\w+\)", r"DOWN\(\w+\)"}
@@ -58,7 +60,10 @@ class MachineParser:
             elif memory_type == "QUEUE":
                 self.memory[name] = Queue()
             elif memory_type == "TAPE":
-                self.memory[name] = Tape()
+                if self.input_tape.name is None:
+                    self.input_tape.name = name
+                else:
+                    self.memory[name] = Tape()
                 
         else:
             print(f"Error: Invalid data syntax at line {line_number}: {line}")
@@ -124,12 +129,13 @@ class MachineParser:
             command_match = re.match(r"(LEFT|RIGHT|UP|DOWN)\((\w+)\)", command)
             if command_match:
                 command, arg = command_match.groups()
-                if arg not in self.memory:
-                    print(f"Error: Memory object does not exist at line {line_number}: {line}")
-                    exit(1)
-                elif self.memory[arg].__class__.__name__ != "Tape":
-                    print(f"Error: Memory object is not a Tape at line {line_number}: {line}")
-                    exit(1)
+                if arg != self.input_tape.name:
+                    if arg not in self.memory:
+                        print(f"Error: Memory object does not exist at line {line_number}: {line}")
+                        exit(1)
+                    elif self.memory[arg].__class__.__name__ != "Tape":
+                        print(f"Error: Memory object is not a Tape at line {line_number}: {line}")
+                        exit(1)
             
             #initializes first line as initial state
             if self.initial_state is None:

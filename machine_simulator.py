@@ -4,7 +4,7 @@ import copy
 
 class MachineSimulator:
     def __init__(self, machine_def, input_tape):
-        self.parser = MachineParser(machine_def)
+        self.parser = MachineParser(machine_def, input_tape)
         self.memory = self.parser.memory
         self.logic = self.parser.logic
         self.state = self.parser.initial_state
@@ -12,7 +12,7 @@ class MachineSimulator:
         self.halt = False
         self.accept = False
         
-        self.input_tape = InputTape(input_tape)
+        self.input_tape = self.parser.input_tape
         
         self.history = [self.state]
         self.timelines = [self]
@@ -33,6 +33,11 @@ class MachineSimulator:
             command = machine.logic[machine.state]["command"]
             transitions = machine.logic[machine.state]["transitions"]
             memory_object = machine.logic[machine.state]["memory_object"]
+            
+            # print(element)
+            # print(command)
+            # print(transitions)
+            # print(memory_object)
                         
             if command in {"SCAN", "SCAN RIGHT", "SCAN LEFT"}:
                 if command == "SCAN LEFT":

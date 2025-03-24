@@ -4,19 +4,29 @@ from aux_data import InputTape
 if __name__ == '__main__':
     machine_def = """
 .DATA
-TAPE T1
+QUEUE Q1
+STACK S1
+STACK S2
 .LOGIC
-A] RIGHT(T1) (0/X,B), (Y/Y,D), (1/1,reject)
-B] RIGHT(T1) (0/0,B), (Y/Y,B), (1/Y,C)
-C] LEFT(T1) (0/0,C), (Y/Y,C), (X/X,A)
-D] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
+A] SCAN (a,B), (b,C)
+B] WRITE(Q1) (X,A)
+C] READ(Q1) (X,D)
+D] WRITE(Q1) (Y,E)
+E] SCAN (b,C), (c,F)
+F] WRITE(Q1) (#,G)
+G] READ(Q1) (Y,H)
+H] SCAN (c,G), (#,I)
+I] READ(Q1) (#,accept)
+
 """
 
-    input_tape = "aaaaabbbbcccc"
+    input_tape = "aaabbbccc"
 
 
     machine = MachineSimulator(machine_def, input_tape)
     halt = False
+    
+    # machine.step()
             
     while machine.active_timelines and not halt:  # Run while there are active timelines
         machine.step()
@@ -30,9 +40,9 @@ D] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
     
     for x in machine.timelines:
         print("\n\n", x)
-        print("DS1: ", x.memory["S1"])
-        print("DS2: ", x.memory["S2"])
-        print("DS2: ", x.memory["Q1"])
+        # print("DS1: ", x.memory["S1"])
+        # print("DS2: ", x.memory["S2"])
+        # print("DS2: ", x.memory["Q1"])
 
         print("State: ", x.state)
         print("Halted: ", x.halt)
