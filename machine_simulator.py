@@ -127,5 +127,6 @@ class MachineSimulator:
             self.halt = True
             self.state = "reject"
             self.history.append("reject")
-        
+    
+    
 

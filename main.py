@@ -1,27 +1,35 @@
 from machine_simulator import MachineSimulator
 from aux_data import InputTape
+from diagram_generator import StateDiagram
+from parser import MachineParser
 
 if __name__ == '__main__':
     machine_def = """
 .DATA
-QUEUE Q1
 STACK S1
-STACK S2
 .LOGIC
-A] SCAN (a,B), (b,C)
-B] WRITE(Q1) (X,A)
-C] READ(Q1) (X,D)
-D] WRITE(Q1) (Y,E)
-E] SCAN (b,C), (c,F)
-F] WRITE(Q1) (#,G)
-G] READ(Q1) (Y,H)
-H] SCAN (c,G), (#,I)
-I] READ(Q1) (#,accept)
+A] WRITE(S1) (#,B)
+B] SCAN RIGHT (a,C), (b,D)
+C] WRITE(S1) (X,B)
+D] READ(S1) (X,E)
+E] SCAN RIGHT (b,D), (c,F), (#,F)
+F] READ(S1) (#,G)
+G] WRITE(S1) (#,H)
+H] SCAN LEFT (b,H), (a,I)
+I] SCAN RIGHT (a,I), (b,J)
+J] WRITE(S1) (X,K)
+K] SCAN RIGHT (b,J), (c,L)
+L] READ(S1) (X,M)
+M] SCAN RIGHT (c,L), (#,N)
+N] READ(S1) (#,accept)
 
 """
 
     input_tape = "aaabbbccc"
 
+    parser = MachineParser(machine_def, input_tape)
+    StateDiagram(parser.logic, parser.initial_state)
+   
 
     machine = MachineSimulator(machine_def, input_tape)
     halt = False
@@ -55,3 +63,5 @@ I] READ(Q1) (#,accept)
     # print("\n\ntimeline", machine.timelines)
     print("active timelines", machine.active_timelines)
     print("accepteded timelines", machine.accepted_timelines)
+    
+    print("Output: ", machine.output)
