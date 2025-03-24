@@ -6,22 +6,14 @@ from parser import MachineParser
 if __name__ == '__main__':
     machine_def = """
 .DATA
-STACK S1
+TAPE T1
 .LOGIC
-A] WRITE(S1) (#,B)
-B] SCAN RIGHT (a,C), (b,D)
-C] WRITE(S1) (X,B)
-D] READ(S1) (X,E)
-E] SCAN RIGHT (b,D), (c,F), (#,F)
-F] READ(S1) (#,G)
-G] WRITE(S1) (#,H)
-H] SCAN LEFT (b,H), (a,I)
-I] SCAN RIGHT (a,I), (b,J)
-J] WRITE(S1) (X,K)
-K] SCAN RIGHT (b,J), (c,L)
-L] READ(S1) (X,M)
-M] SCAN RIGHT (c,L), (#,N)
-N] READ(S1) (#,accept)
+A] RIGHT(T1) (0/X,B), (Y/Y,D), (1/1,reject)
+B] RIGHT(T1) (0/0,B), (Y/Y,B), (1/Y,C)
+C] LEFT(T1) (0/0,C), (Y/Y,C), (X/X,A)
+D] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
+
+
 
 """
 

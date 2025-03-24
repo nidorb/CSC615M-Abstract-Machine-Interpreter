@@ -22,29 +22,31 @@ class StateDiagram:
     def build_graph(self):
         dot = graphviz.Digraph(format="png")
 
-        # Define all states first with correct colors
         for state, data in self.logic.items():
             command = data["command"]
-            state_label = self.command_map.get(command, command)  # Convert command to mapped label
+            state_label = self.command_map.get(command, command)
             if state == self.initial_state:
-                fillcolor = "green"  # Initial state is green
+                fillcolor = "green"
             elif state == "accept":
-                fillcolor = "red"  # Accept state is red
+                fillcolor = "red"
             else:
-                fillcolor = "yellow"  # Other states are yellow
+                fillcolor = "yellow"
 
             dot.node(state, label=state_label, shape="circle", style="filled", fillcolor=fillcolor)
 
-        # Define transitions
+        # transitions
         for state, data in self.logic.items():
             transitions = data["transitions"]
 
             for edge_value, next_states in transitions.items():
-                if isinstance(next_states, tuple):  # For movements like LEFT, RIGHT, etc.
+                if isinstance(next_states, tuple):  # tape instruc
                     write_value, next_state = next_states
-                    label = f"{edge_value}/{write_value}"
+                    if edge_value == write_value:
+                        label = f"{edge_value}"
+                    else:
+                        label = f"{edge_value}/{write_value}"
                     dot.edge(state, next_state, label=label)
-                elif isinstance(next_states, list):  # Handle cases where multiple states exist
+                elif isinstance(next_states, list):  #mul states
                     for next_state in next_states:
                         dot.edge(state, next_state, label=edge_value)
                 else:
