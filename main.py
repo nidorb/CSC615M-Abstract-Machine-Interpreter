@@ -10,21 +10,23 @@ TAPE T1
 .LOGIC
 A] RIGHT(T1) (0/X,B), (Y/Y,D), (1/1,reject)
 B] RIGHT(T1) (0/0,B), (Y/Y,B), (1/Y,C)
-C] LEFT(T1) (0/0,C), (Y/Y,C), (X/X,A)
+C] LEFT(T1) (0/Y,C), (Y/Y,C), (X/X,A)
 D] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
-
-
 
 """
 
-    input_tape = "aaabbbccc"
+    input_tape = "00101#10"
 
-    parser = MachineParser(machine_def, input_tape)
-    StateDiagram(parser.logic, parser.initial_state)
+
+    #machine state diagram generator
+    # parser = MachineParser(machine_def, input_tape)
+    # StateDiagram(parser.logic, parser.initial_state)
    
 
     machine = MachineSimulator(machine_def, input_tape)
     halt = False
+    
+    # machine.step()
     
     # machine.step()
             
@@ -43,6 +45,11 @@ D] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
         # print("DS1: ", x.memory["S1"])
         # print("DS2: ", x.memory["S2"])
         # print("DS2: ", x.memory["Q1"])
+        for y in x.memory:
+            print("Mem: ", x.memory[y])
+        print("Mem: ", x.input_tape)
+        print("Head: ", x.input_tape.head)
+        print("Head element: ", x.input_tape.get_element())
 
         print("State: ", x.state)
         print("Halted: ", x.halt)
@@ -50,7 +57,6 @@ D] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
         print("Hisotry: ", x.history)
         print("Output: ", x.output)
 
-        
         
     # print("\n\ntimeline", machine.timelines)
     print("active timelines", machine.active_timelines)

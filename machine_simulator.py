@@ -33,6 +33,7 @@ class MachineSimulator:
             command = machine.logic[machine.state]["command"]
             transitions = machine.logic[machine.state]["transitions"]
             memory_object = machine.logic[machine.state]["memory_object"]
+            print("MEMORY OBJECT: ", memory_object)
             
             # print(element)
             # print(command)
@@ -41,14 +42,14 @@ class MachineSimulator:
                         
             if command in {"SCAN", "SCAN RIGHT", "SCAN LEFT"}:
                 if command == "SCAN LEFT":
+                    machine.input_tape.move_head("LEFT")
                     if not machine.input_tape.can_move("LEFT"): #checks if tape is at #
                         machine.input_tape.add_left()
-                    machine.input_tape.move_head("LEFT")
                     
                 else:
+                    machine.input_tape.move_head("RIGHT")
                     if not machine.input_tape.can_move("RIGHT"): #checks if tape is at #
                         machine.input_tape.add_right()     
-                    machine.input_tape.move_head("RIGHT")
                 
                 element = machine.input_tape.get_element()
                             
@@ -103,7 +104,63 @@ class MachineSimulator:
                         
                 
                 self.timelines.remove(machine)
-        
+
+            elif command in {"LEFT", "RIGHT"}:
+                print("\n\nBEFORE INPUT: ", machine.input_tape)
+                #checks if tape is input or not
+                if memory_object == machine.input_tape.name:
+                    tape = machine.input_tape
+                    print("Input")
+                else:
+                    tape = machine.memory[memory_object]
+                    print("Rando Tape")
+                print("Tape being processed: ", tape)  
+                if command == "LEFT":
+                    print("Before: ", tape.get_element())
+                    tape.move_head("LEFT")
+                    if not tape.can_move("LEFT"): #checks if tape is at #
+                        tape.add_left()
+                    print("After: ", tape.get_element())
+                                    
+                elif command == "RIGHT":
+                    print("Before: ", tape.get_element())
+                    tape.move_head("RIGHT")
+                    if not tape.can_move("RIGHT"): #checks if tape is at #
+                        tape.add_right()       
+                    print("After: ", tape.get_element())
+                
+                
+                element = tape.get_element()
+                print("\nElement: ", element)
+                
+                #checks all dest state of element
+                if element in transitions:
+                    possible_states = transitions[element]
+                    
+                    #NFA
+                    if len(possible_states) > 1: 
+                        for replacement, state in possible_states[1:]:
+                            new_machine = copy.deepcopy(machine)
+                            new_machine.state = state
+                            tape.replace(replacement)
+                            new_machine.history.append(state)
+                            new_machine.handle_state_termination()
+                            new_timelines.append(new_machine)                
+            
+                    machine.state = possible_states[0][1]
+                    tape.replace(possible_states[0][0])
+                    print(possible_states[0])
+                    machine.history.append(machine.state)
+                    machine.handle_state_termination()
+                
+                # input has no transitions
+                else:
+                    print(f"[ERROR] No transition found for element '{element}'. Halting.")
+                    machine.history.append("reject")
+                    machine.state = "reject"
+                    machine.halt = True
+                print("\n\n AFTER INPUT: ", tape)
+                            
         self.timelines += new_timelines
         self.active_timelines = [t for t in self.timelines if not t.halt]
         self.accepted_timelines = [t for t in self.timelines if t.accept]
@@ -119,13 +176,6 @@ class MachineSimulator:
             self.halt = True
             self.state = "reject"
             print("Reject")
-            self.history.append("reject")
-            
-    def handle_read(self, ds, x):
-        if ds.pop() == None or ds.peek() != x:
-            print("Error: Empty Stack or Stack cannot be Read")
-            self.halt = True
-            self.state = "reject"
             self.history.append("reject")
     
     

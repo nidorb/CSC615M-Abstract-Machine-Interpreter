@@ -176,7 +176,9 @@ class MachineParser:
         matches = re.findall(pattern, transitions)
 
         for symbol, replacement, state in matches:
-            parsed[symbol] = (replacement, state)  # Store as a tuple
+            if symbol not in parsed:
+                parsed[symbol] = []
+            parsed[symbol].append((replacement, state))  # Store as a tuple
 
         return parsed
 

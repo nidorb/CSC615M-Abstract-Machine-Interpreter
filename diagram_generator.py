@@ -1,10 +1,9 @@
 import graphviz
 
 class StateDiagram:
-    def __init__(self, logic, initial_state, filename="state_diagram"):
+    def __init__(self, logic, initial_state):
         self.logic = logic
         self.initial_state = initial_state
-        self.filename = filename
         self.command_map = {
             "SCAN": "S",
             "SCAN LEFT": "SL",
@@ -39,17 +38,20 @@ class StateDiagram:
             transitions = data["transitions"]
 
             for edge_value, next_states in transitions.items():
-                if isinstance(next_states, tuple):  # tape instruc
+                if isinstance(next_states, list):
+                    for transition in next_states:
+                        if isinstance(transition, tuple) and len(transition) == 2:
+                            write_value, next_state = transition
+                            label = f"{edge_value}/{write_value}" if edge_value != write_value else f"{edge_value}"
+                            dot.edge(state, str(next_state), label=label)
+                        else:
+                            dot.edge(state, str(transition), label=edge_value)
+                elif isinstance(next_states, tuple) and len(next_states) == 2:  # Single tuple case
                     write_value, next_state = next_states
-                    if edge_value == write_value:
-                        label = f"{edge_value}"
-                    else:
-                        label = f"{edge_value}/{write_value}"
-                    dot.edge(state, next_state, label=label)
-                elif isinstance(next_states, list):  #mul states
-                    for next_state in next_states:
-                        dot.edge(state, next_state, label=edge_value)
+                    label = f"{edge_value}/{write_value}" if edge_value != write_value else f"{edge_value}"
+                    dot.edge(state, str(next_state), label=label)
                 else:
-                    dot.edge(state, next_states, label=edge_value)
+                    dot.edge(state, str(next_states), label=edge_value)
 
-        dot.render(self.filename, view=True)
+
+        dot.render("state_diagram", view=True)
