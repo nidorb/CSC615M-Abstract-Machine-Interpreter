@@ -140,8 +140,10 @@ class MachineSimulator:
                             
                             if isInputTape:
                                 new_machine.input_tape.replace(replacement)
+                                self.check_mark_tape(new_machine.input_tape, command, element, replacement)
                             else:
                                 new_machine.memory[memory_object].replace(replacement)
+                                self.check_mark_tape(new_machine.memory[memory_object], command, element, replacement)
                                       
                             new_machine.history.append(state)
                             new_machine.handle_state_termination()
@@ -151,9 +153,10 @@ class MachineSimulator:
                     machine.state = state   
                     if isInputTape:
                         machine.input_tape.replace(replacement)
+                        self.check_mark_tape(machine.input_tape, command, element, replacement)
                     else:
                         machine.memory[memory_object].replace(replacement)
-
+                        self.check_mark_tape(machine.memory[memory_object], command, element, replacement)
                     machine.history.append(machine.state)
                     machine.handle_state_termination()
                 
@@ -181,6 +184,13 @@ class MachineSimulator:
             self.state = "reject"
             print("Reject")
             self.history.append("reject")
+            
+    def check_mark_tape(self, tape, command, element, replacement):
+        if element == "#" and replacement != "#":
+            if command in {"LEFT", "SCAN LEFT"}:
+                tape.add_left()
+            elif command in {"RIGHT", "SCAN", "SCAN RIGHT"}:
+                tape.add_right()
     
     
 
