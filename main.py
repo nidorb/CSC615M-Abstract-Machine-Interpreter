@@ -7,29 +7,28 @@ if __name__ == '__main__':
     machine_def = """
 .DATA
 TAPE T1
+TAPE T2
+TAPE T3
 .LOGIC
-A] RIGHT(T1) (0/X,B), (Y/Y,D), (1/1,reject)
-B] RIGHT(T1) (0/0,B), (Y/Y,B), (1/Y,C)
-C] LEFT(T1) (0/Y,C), (Y/Y,C), (X/X,A)
-D] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
-
+A] RIGHT(T1) (a/a,B)
+B] RIGHT(T1) (#/a,C)
+C] RIGHT(T1) (#/a,D)
+D] RIGHT(T1) (#/a,accept)
 """
 
-    input_tape = "00101#10"
+    input_tape = "a"
 
 
     #machine state diagram generator
-    # parser = MachineParser(machine_def, input_tape)
-    # StateDiagram(parser.logic, parser.initial_state)
+    #parser = MachineParser(machine_def, input_tape)
+    #StateDiagram(parser.logic, parser.initial_state)
    
 
     machine = MachineSimulator(machine_def, input_tape)
     halt = False
+
+    #machine.step()
     
-    # machine.step()
-    
-    # machine.step()
-            
     while machine.active_timelines and not halt:  # Run while there are active timelines
         machine.step()
         for x in machine.timelines:
@@ -46,8 +45,8 @@ D] RIGHT(T1) (Y/Y,D), (#/#,accept), (1/1,reject)
         # print("DS2: ", x.memory["S2"])
         # print("DS2: ", x.memory["Q1"])
         for y in x.memory:
-            print("Mem: ", x.memory[y])
-        print("Mem: ", x.input_tape)
+            print(y, "Mem: ", x.memory[y])
+        print("Input: Mem: ", x.input_tape)
         print("Head: ", x.input_tape.head)
         print("Head element: ", x.input_tape.get_element())
 

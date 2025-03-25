@@ -67,7 +67,7 @@ class Tape():
 
     def move_head(self, direction):
         if direction == "LEFT":
-            self.head -= 1
+            self.head = max(0, self.head - 1)        
         elif direction == "RIGHT":
             self.head += 1
             
@@ -103,7 +103,8 @@ class InputTape:
     
     def move_head(self, direction):
         if direction == "LEFT":
-            self.head -= 1
+            self.head = max(0, self.head - 1)
+            
         elif direction == "RIGHT":
             self.head += 1
             

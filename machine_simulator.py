@@ -42,15 +42,15 @@ class MachineSimulator:
                         
             if command in {"SCAN", "SCAN RIGHT", "SCAN LEFT"}:
                 if command == "SCAN LEFT":
-                    machine.input_tape.move_head("LEFT")
                     if not machine.input_tape.can_move("LEFT"): #checks if tape is at #
                         machine.input_tape.add_left()
+                    machine.input_tape.move_head("LEFT")
                     
                 else:
-                    machine.input_tape.move_head("RIGHT")
                     if not machine.input_tape.can_move("RIGHT"): #checks if tape is at #
                         machine.input_tape.add_right()     
-                
+                    machine.input_tape.move_head("RIGHT")
+                    
                 element = machine.input_tape.get_element()
                             
                 #checks all dest state of element
@@ -106,50 +106,54 @@ class MachineSimulator:
                 self.timelines.remove(machine)
 
             elif command in {"LEFT", "RIGHT"}:
-                print("\n\nBEFORE INPUT: ", machine.input_tape)
+                print(command)
+                isInputTape = False
                 #checks if tape is input or not
                 if memory_object == machine.input_tape.name:
                     tape = machine.input_tape
+                    isInputTape = True
                     print("Input")
                 else:
                     tape = machine.memory[memory_object]
-                    print("Rando Tape")
-                print("Tape being processed: ", tape)  
+
                 if command == "LEFT":
-                    print("Before: ", tape.get_element())
-                    tape.move_head("LEFT")
                     if not tape.can_move("LEFT"): #checks if tape is at #
                         tape.add_left()
-                    print("After: ", tape.get_element())
+                    tape.move_head("LEFT")
                                     
                 elif command == "RIGHT":
-                    print("Before: ", tape.get_element())
-                    tape.move_head("RIGHT")
                     if not tape.can_move("RIGHT"): #checks if tape is at #
                         tape.add_right()       
-                    print("After: ", tape.get_element())
-                
+                    tape.move_head("RIGHT")
                 
                 element = tape.get_element()
-                print("\nElement: ", element)
                 
                 #checks all dest state of element
                 if element in transitions:
                     possible_states = transitions[element]
-                    
+
                     #NFA
                     if len(possible_states) > 1: 
                         for replacement, state in possible_states[1:]:
                             new_machine = copy.deepcopy(machine)
                             new_machine.state = state
-                            tape.replace(replacement)
+                            
+                            if isInputTape:
+                                new_machine.input_tape.replace(replacement)
+                            else:
+                                new_machine.memory[memory_object].replace(replacement)
+                                      
                             new_machine.history.append(state)
                             new_machine.handle_state_termination()
-                            new_timelines.append(new_machine)                
-            
-                    machine.state = possible_states[0][1]
-                    tape.replace(possible_states[0][0])
-                    print(possible_states[0])
+                            new_timelines.append(new_machine)
+                            
+                    replacement, state = possible_states[0]                
+                    machine.state = state   
+                    if isInputTape:
+                        machine.input_tape.replace(replacement)
+                    else:
+                        machine.memory[memory_object].replace(replacement)
+
                     machine.history.append(machine.state)
                     machine.handle_state_termination()
                 
