@@ -72,7 +72,6 @@ class Tape():
             self.head += 1
             
     def can_move(self, direction):
-        """Returns False if moving out of bounds, True otherwise."""
         if direction == "LEFT" and self.head == 0:
             return False
         if direction == "RIGHT" and self.head == len(self.tape) - 1:
@@ -82,8 +81,7 @@ class Tape():
     def replace(self, element):
         self.tape[self.head] = element
     
-
-class InputTape:
+class InputTape():
     def __init__(self, input_string: str):
         self.name = None
         self.tape = ['#'] + list(input_string) + ['#']
@@ -118,3 +116,52 @@ class InputTape:
     
     def replace(self, element):
         self.tape[self.head] = element
+
+
+class Tape2D():
+    def __init__(self):
+        self.tape = [['#', '#']]
+        self.head_x = 0
+        self.head_y = 0
+    
+    def get_row(self):
+        return self.tape[self.head_y]
+    
+    def move_head(self, direction):
+        if direction == "LEFT":
+            self.head_x = max(0, self.head_x - 1)        
+        elif direction == "RIGHT":
+            self.head_x += 1
+        if direction == "UP":
+            self.head_y = max(0, self.head_y - 1)        
+        elif direction == "DOWN":
+            self.head_y += 1
+        
+    def can_move(self, direction):
+        if direction == "LEFT" and self.head_x == 0:
+            return False
+        elif direction == "RIGHT" and self.head_x == len(self.tape) - 1:
+            return False
+        elif direction == "UP" and self.head_y == 0:
+            return False
+        elif direction == "DOWN" and self.head_y == len(self.tape) - 1:
+            return False
+        return True
+    
+    def len_row(self):
+        return len(self.tape[self.head_y])
+    
+    def len_col(self):
+        return len(self.tape)
+    
+    def get_element(self):
+        return self.tape[self.head_x][self.head_y]
+    
+    def add_row(self):
+        self.tape.append(['#','#'])
+        
+    def view_tape(self):
+        return self.tape
+    
+    def replace(self, element):
+        self.tape[self.head_x][self.head_y] = element

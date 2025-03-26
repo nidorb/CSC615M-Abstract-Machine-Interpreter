@@ -6,27 +6,26 @@ from parser import MachineParser
 if __name__ == '__main__':
     machine_def = """
 .DATA
-STACK S1
-STACK S2
+.DATA
+TAPE T1
+TAPE T2
+TAPE T3
 .LOGIC
-A] WRITE(S1) (#,B), (#,O)
-B] WRITE(S2) (#,C)
-C] WRITE(S1) (X,D)
-D] READ(S1) (X,E), (#,G), (X,D)
-E] WRITE(S2) (X,F)
-F] SCAN (1,D)
-G] SCAN (1,H), (#,accept)
-H] WRITE(S1) (#,I)
-I] READ(S2) (X,J), (#,L)
-J] WRITE(S1) (X,I)
-L] WRITE(S2) (#,M)
-M] WRITE(S2) (X,N)
-N] WRITE(S2) (X,F)
-O] SCAN (#,P)
-P] READ(S1) (#,accept)
+A] RIGHT(T1) (a/a,B), (b/b,C)
+B] RIGHT(T2) (#/X,A)
+C] RIGHT(T2) (#/#,D)
+D] LEFT(T2) (X/#,E)
+E] RIGHT(T3) (#/X,F)
+F] RIGHT(T1) (b/b,E), (c/c,G)
+G] RIGHT(T3) (#/#,H)
+H] LEFT(T3) (X/#,I)
+I] RIGHT(T3) (c/c,H), (#/#,J)
+J] LEFT(T2) (#/#,K)
+K] LEFT(T3) (#/#,accept)
 """
 
-    input_tape = "11111"
+    input_tape = "abbcc"
+
 
 
     #machine state diagram generator
@@ -54,11 +53,9 @@ P] READ(S1) (#,accept)
     
     for x in machine.timelines:
         print("\n\n", x)
-        print("DS1: ", x.memory["S1"].view_ds())
-        print("DS2: ", x.memory["S2"].view_ds())
+        #print("DS1: ", x.memory["S1"].view_ds())
+        #print("DS2: ", x.memory["S2"].view_ds())
         # print("DS2: ", x.memory["Q1"])
-        for y in x.memory:
-            print(y, "Mem: ", x.memory[y])
         print("Input: Mem: ", x.input_tape)
         print("Head: ", x.input_tape.head)
         print("Head element: ", x.input_tape.get_element())

@@ -97,7 +97,7 @@ class MachineSimulator:
                 
                 self.timelines.remove(machine)
             
-            if command == "READ":
+            elif command == "READ":
                 ds = machine.memory[memory_object]
                 top_element = ds.peek()
                 
@@ -126,7 +126,6 @@ class MachineSimulator:
                     machine.state = "reject"
                     machine.halt = True
                                     
-
             elif command in {"LEFT", "RIGHT"}:
                 print(command)
                 isInputTape = False
@@ -137,7 +136,7 @@ class MachineSimulator:
                     print("Input")
                 else:
                     tape = machine.memory[memory_object]
-
+                    
                 if command == "LEFT":
                     if not tape.can_move("LEFT"): #checks if tape is at #
                         tape.add_left()
@@ -189,7 +188,15 @@ class MachineSimulator:
                     machine.state = "reject"
                     machine.halt = True
                 print("\n\n AFTER INPUT: ", tape)
-                            
+            
+            elif command in {"UP", "DOWN"}:
+                machine.halt = True
+                print(memory_object)
+                tape = machine.memory[memory_object]
+                tape.add_row()
+                tape.move_head(command)
+                print(machine.memory[memory_object].get_row())
+                   
         self.timelines += new_timelines
         self.active_timelines = [t for t in self.timelines if not t.halt]
         self.accepted_timelines = [t for t in self.timelines if t.accept]
