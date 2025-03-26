@@ -77,7 +77,7 @@ class MachineSimulator:
                     machine.state = "reject"
                     machine.halt = True
                 
-            elif command in {"PRINT", "READ", "WRITE"}:
+            elif command in {"PRINT", "WRITE"}: #NFA for all transitions (no checking)
                 for x in transitions:
                     for state in transitions[x]:
                         new_machine = copy.deepcopy(machine)
@@ -89,14 +89,6 @@ class MachineSimulator:
                             ds = new_machine.memory[memory_object]
                             if command == "WRITE":
                                 ds.push(x)
-
-                            elif command == "READ":
-                                if ds.peek() == None or ds.peek() != x:
-                                    new_machine.halt = True
-                                    new_machine.state = "reject"
-
-                                else:
-                                    ds.pop()
                                     
                         new_machine.history.append(new_machine.state)
                         new_machine.handle_state_termination()
@@ -104,6 +96,36 @@ class MachineSimulator:
                         
                 
                 self.timelines.remove(machine)
+            
+            if command == "READ":
+                ds = machine.memory[memory_object]
+                top_element = ds.peek()
+                
+                if top_element in transitions:
+                    possible_states = transitions[top_element]
+                    
+                    #NFA
+                    if len(possible_states) > 1: 
+                        for state in possible_states[1:]:
+                            new_machine = copy.deepcopy(machine)
+                            ds = new_machine.memory[memory_object]
+                            ds.pop()
+                            new_machine.state = state
+                            new_machine.history.append(state)
+                            new_machine.handle_state_termination()
+                            new_timelines.append(new_machine)                
+
+                    ds = machine.memory[memory_object]
+                    ds.pop()
+                    machine.state = possible_states[0]
+                    machine.history.append(machine.state)
+                    machine.handle_state_termination()
+                else:
+                    print(f"[ERROR] No transition found for element '{element}'. Halting.")
+                    machine.history.append("reject")
+                    machine.state = "reject"
+                    machine.halt = True
+                                    
 
             elif command in {"LEFT", "RIGHT"}:
                 print(command)

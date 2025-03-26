@@ -6,17 +6,27 @@ from parser import MachineParser
 if __name__ == '__main__':
     machine_def = """
 .DATA
-TAPE T1
-TAPE T2
-TAPE T3
+STACK S1
+STACK S2
 .LOGIC
-A] RIGHT(T1) (a/a,B)
-B] RIGHT(T1) (#/a,C)
-C] RIGHT(T1) (#/a,D)
-D] RIGHT(T1) (#/a,accept)
+A] WRITE(S1) (#,B), (#,O)
+B] WRITE(S2) (#,C)
+C] WRITE(S1) (X,D)
+D] READ(S1) (X,E), (#,G), (X,D)
+E] WRITE(S2) (X,F)
+F] SCAN (1,D)
+G] SCAN (1,H), (#,accept)
+H] WRITE(S1) (#,I)
+I] READ(S2) (X,J), (#,L)
+J] WRITE(S1) (X,I)
+L] WRITE(S2) (#,M)
+M] WRITE(S2) (X,N)
+N] WRITE(S2) (X,F)
+O] SCAN (#,P)
+P] READ(S1) (#,accept)
 """
 
-    input_tape = "a"
+    input_tape = "11111"
 
 
     #machine state diagram generator
@@ -27,7 +37,10 @@ D] RIGHT(T1) (#/a,accept)
     machine = MachineSimulator(machine_def, input_tape)
     halt = False
 
-    #machine.step()
+    # machine.step()
+    # machine.step()
+    # machine.step()
+    # machine.step()
     
     while machine.active_timelines and not halt:  # Run while there are active timelines
         machine.step()
@@ -41,8 +54,8 @@ D] RIGHT(T1) (#/a,accept)
     
     for x in machine.timelines:
         print("\n\n", x)
-        # print("DS1: ", x.memory["S1"])
-        # print("DS2: ", x.memory["S2"])
+        print("DS1: ", x.memory["S1"].view_ds())
+        print("DS2: ", x.memory["S2"].view_ds())
         # print("DS2: ", x.memory["Q1"])
         for y in x.memory:
             print(y, "Mem: ", x.memory[y])
@@ -60,5 +73,3 @@ D] RIGHT(T1) (#/a,accept)
     # print("\n\ntimeline", machine.timelines)
     print("active timelines", machine.active_timelines)
     print("accepteded timelines", machine.accepted_timelines)
-    
-    print("Output: ", machine.output)
