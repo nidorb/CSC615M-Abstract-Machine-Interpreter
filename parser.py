@@ -1,5 +1,5 @@
 import re
-from aux_data import Stack, Queue, Tape, InputTape, Tape2D
+from aux_data import Stack, Queue, Tape, InputTape, Tape2D, InputTape2D
 
 class MachineParser:
     def __init__(self, input_text, input_tape):
@@ -8,6 +8,7 @@ class MachineParser:
         self.logic = {}
         self.transitions=[]
         self.initial_state = None
+        self.tape = input_tape
         self.input_tape = InputTape(input_tape)
         
         self.data_keywords = {"STACK", "QUEUE", "TAPE", "2D_TAPE"}
@@ -65,7 +66,11 @@ class MachineParser:
                 else:
                     self.memory[name] = Tape()
             elif memory_type == "2D_TAPE":
-                self.memory[name] = Tape2D()
+                if self.input_tape.name is None:
+                    self.input_tape = InputTape2D(self.tape)
+                    self.input_tape.name = name
+                else:
+                    self.memory[name] = Tape2D()
                 
         else:
             print(f"Error: Invalid data syntax at line {line_number}: {line}")
@@ -99,12 +104,12 @@ class MachineParser:
             command_match = re.match(r"(READ|WRITE)\((\w+)\)", command)
             if command_match:
                 command, arg = command_match.groups()
-                if arg not in self.memory:
+                if arg not in self.memory and arg != self.input_tape.name:
                     print(f"Error: Memory object does not exist at line {line_number}: {line}")
                     exit(1)
-                elif isinstance(self.memory[arg], Tape):
-                    print(f"Error: Memory object is not a Stack or Queue at line {line_number}: {line}")
-                    exit(1)
+                elif self.input_tape.name == arg or isinstance(self.memory[arg], Tape) or isinstance(self.memory[arg], Tape2D):
+                        print(f"Error: Memory object is not a Stack or Queue at line {line_number}: {line}")
+                        exit(1)
                 
             #initializes first line as initial state
             if self.initial_state is None:
@@ -132,15 +137,18 @@ class MachineParser:
             if command_match:
                 command, arg = command_match.groups()
                 if arg != self.input_tape.name:
+                    if command in {"UP", "DOWN"}:
+                        if arg not in self.memory and arg != self.input_tape.name:
+                            print(f"Error: Memory object does not exist at line {line_number}: {line}")
+                            exit(1)
+                        elif isinstance(self.memory[arg], Tape):
+                            print(f"Error: Memory object is not a 2D Tape at line {line_number}: {line}")
+                            exit(1)
                     if arg not in self.memory:
                         print(f"Error: Memory object does not exist at line {line_number}: {line}")
                         exit(1)
                     elif self.memory[arg].__class__.__name__ not in {"Tape", "Tape2D"}:
                         print(f"Error: Memory object is not a Tape at line {line_number}: {line}")
-                        exit(1)
-                if command in {"UP", "DOWN"}:
-                    if not isinstance(self.memory[arg], Tape2D):
-                        print(f"Error: Memory object is not a 2D Tape at line {line_number}: {line}")
                         exit(1)
             
             #initializes first line as initial state

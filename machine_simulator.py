@@ -33,12 +33,6 @@ class MachineSimulator:
             command = machine.logic[machine.state]["command"]
             transitions = machine.logic[machine.state]["transitions"]
             memory_object = machine.logic[machine.state]["memory_object"]
-            print("MEMORY OBJECT: ", memory_object)
-            
-            # print(element)
-            # print(command)
-            # print(transitions)
-            # print(memory_object)
                         
             if command in {"SCAN", "SCAN RIGHT", "SCAN LEFT"}:
                 if command == "SCAN LEFT":
@@ -127,16 +121,14 @@ class MachineSimulator:
                     machine.halt = True
                                     
             elif command in {"LEFT", "RIGHT"}:
-                print(command)
                 isInputTape = False
                 #checks if tape is input or not
                 if memory_object == machine.input_tape.name:
                     tape = machine.input_tape
                     isInputTape = True
-                    print("Input")
                 else:
                     tape = machine.memory[memory_object]
-                    
+
                 if command == "LEFT":
                     if not tape.can_move("LEFT"): #checks if tape is at #
                         tape.add_left()
@@ -148,6 +140,7 @@ class MachineSimulator:
                     tape.move_head("RIGHT")
                 
                 element = tape.get_element()
+                print("Element: ", element)
                 
                 #checks all dest state of element
                 if element in transitions:
@@ -187,16 +180,68 @@ class MachineSimulator:
                     machine.history.append("reject")
                     machine.state = "reject"
                     machine.halt = True
-                print("\n\n AFTER INPUT: ", tape)
             
             elif command in {"UP", "DOWN"}:
-                machine.halt = True
-                print(memory_object)
-                tape = machine.memory[memory_object]
-                tape.add_row()
-                tape.move_head(command)
-                print(machine.memory[memory_object].get_row())
-                   
+                
+                isInputTape = False
+                if memory_object == machine.input_tape.name:
+                    tape = machine.input_tape
+                    isInputTape = True
+                else:
+                    tape = machine.memory[memory_object]
+                    
+                if command == "UP":
+                    if not tape.can_move("UP"): #checks if tape is at #
+                        tape.add_up()
+                    tape.move_head("UP")
+                    
+                                    
+                elif command == "DOWN":
+                    if not tape.can_move("DOWN"): #checks if tape is at #
+                        tape.add_down()       
+                    tape.move_head("DOWN")
+                    
+                
+                element = tape.get_element()
+                #checks all dest state of element
+                if element in transitions:
+                    possible_states = transitions[element]
+
+                    #NFA
+                    if len(possible_states) > 1: 
+                        for replacement, state in possible_states[1:]:
+                            new_machine = copy.deepcopy(machine)
+                            new_machine.state = state
+                            
+                            if isInputTape:
+                                new_machine.input_tape.replace(replacement)
+                                self.check_mark_tape_updown(new_machine.input_tape, command, element, replacement)
+                            else:
+                                new_machine.memory[memory_object].replace(replacement)
+                                self.check_mark_tape_updown(new_machine.memory[memory_object], command, element, replacement)
+                                      
+                            new_machine.history.append(state)
+                            new_machine.handle_state_termination()
+                            new_timelines.append(new_machine)
+                            
+                    replacement, state = possible_states[0]                
+                    machine.state = state   
+                    if isInputTape:
+                        machine.input_tape.replace(replacement)
+                        self.check_mark_tape_updown(machine.input_tape, command, element, replacement)
+                    else:
+                        machine.memory[memory_object].replace(replacement)
+                        self.check_mark_tape_updown(machine.memory[memory_object], command, element, replacement)
+                    machine.history.append(machine.state)
+                    machine.handle_state_termination()
+                
+                # input has no transitions
+                else:
+                    print(f"[ERROR] No transition found for element '{element}'. Halting.")
+                    machine.history.append("reject")
+                    machine.state = "reject"
+                    machine.halt = True
+                
         self.timelines += new_timelines
         self.active_timelines = [t for t in self.timelines if not t.halt]
         self.accepted_timelines = [t for t in self.timelines if t.accept]
@@ -215,11 +260,22 @@ class MachineSimulator:
             self.history.append("reject")
             
     def check_mark_tape(self, tape, command, element, replacement):
+        print("check_mark_tape: ", tape.head_x)
         if element == "#" and replacement != "#":
-            if command in {"LEFT", "SCAN LEFT"}:
+            if command in {"LEFT", "SCAN LEFT"} and tape.head_x == 0:
                 tape.add_left()
-            elif command in {"RIGHT", "SCAN", "SCAN RIGHT"}:
+                tape.head_x += 1
+            elif command in {"RIGHT", "SCAN", "SCAN RIGHT"} and tape.head_x == len(tape.get_row()) - 1:
                 tape.add_right()
     
+    def check_mark_tape_updown(self, tape, command, element, replacement):
+        if element == "#" and replacement != "#":
+            if tape.head_x == 0:
+                tape.add_left()
+                tape.head_x += 1
+                print("Add: ", tape.head_x)
+            elif tape.head_x == len(tape.get_row()) - 1:
+                tape.add_right()
+
     
 

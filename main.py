@@ -6,12 +6,11 @@ from parser import MachineParser
 if __name__ == '__main__':
     machine_def = """
 .DATA
-.DATA
 TAPE T1
 TAPE T2
 TAPE T3
 .LOGIC
-A] RIGHT(T1) (a/a,B), (b/b,C)
+A] LEFT(T1) (a/a,B), (b/b,C)
 B] RIGHT(T2) (#/X,A)
 C] RIGHT(T2) (#/#,D)
 D] LEFT(T2) (X/#,E)
@@ -24,7 +23,7 @@ J] LEFT(T2) (#/#,K)
 K] LEFT(T3) (#/#,accept)
 """
 
-    input_tape = "abbcc"
+    input_tape = "abbbccc"
 
 
 
@@ -36,10 +35,6 @@ K] LEFT(T3) (#/#,accept)
     machine = MachineSimulator(machine_def, input_tape)
     halt = False
 
-    # machine.step()
-    # machine.step()
-    # machine.step()
-    # machine.step()
     
     while machine.active_timelines and not halt:  # Run while there are active timelines
         machine.step()
@@ -53,11 +48,14 @@ K] LEFT(T3) (#/#,accept)
     
     for x in machine.timelines:
         print("\n\n", x)
+        for y in x.memory:
+            print(y, x.memory[y])
+            
         #print("DS1: ", x.memory["S1"].view_ds())
         #print("DS2: ", x.memory["S2"].view_ds())
         # print("DS2: ", x.memory["Q1"])
         print("Input: Mem: ", x.input_tape)
-        print("Head: ", x.input_tape.head)
+        print("Head: ", x.input_tape.head_x)
         print("Head element: ", x.input_tape.get_element())
 
         print("State: ", x.state)
