@@ -66,7 +66,6 @@ class MachineSimulator:
                 
                 # input has no transitions
                 else:
-                    print(f"[ERROR] No transition found for element '{element}'. Halting.")
                     machine.history.append("reject")
                     machine.state = "reject"
                     machine.halt = True
@@ -115,7 +114,6 @@ class MachineSimulator:
                     machine.history.append(machine.state)
                     machine.handle_state_termination()
                 else:
-                    print(f"[ERROR] No transition found for element '{element}'. Halting.")
                     machine.history.append("reject")
                     machine.state = "reject"
                     machine.halt = True
@@ -140,7 +138,6 @@ class MachineSimulator:
                     tape.move_head("RIGHT")
                 
                 element = tape.get_element()
-                print("Element: ", element)
                 
                 #checks all dest state of element
                 if element in transitions:
@@ -176,7 +173,6 @@ class MachineSimulator:
                 
                 # input has no transitions
                 else:
-                    print(f"[ERROR] No transition found for element '{element}'. Halting.")
                     machine.history.append("reject")
                     machine.state = "reject"
                     machine.halt = True
@@ -237,7 +233,6 @@ class MachineSimulator:
                 
                 # input has no transitions
                 else:
-                    print(f"[ERROR] No transition found for element '{element}'. Halting.")
                     machine.history.append("reject")
                     machine.state = "reject"
                     machine.halt = True
@@ -260,7 +255,6 @@ class MachineSimulator:
             self.history.append("reject")
             
     def check_mark_tape(self, tape, command, element, replacement):
-        print("check_mark_tape: ", tape.head_x)
         if element == "#" and replacement != "#":
             if command in {"LEFT", "SCAN LEFT"} and tape.head_x == 0:
                 tape.add_left()
@@ -273,7 +267,6 @@ class MachineSimulator:
             if tape.head_x == 0:
                 tape.add_left()
                 tape.head_x += 1
-                print("Add: ", tape.head_x)
             elif tape.head_x == len(tape.get_row()) - 1:
                 tape.add_right()
 

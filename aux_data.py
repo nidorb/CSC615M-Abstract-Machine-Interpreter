@@ -84,6 +84,9 @@ class Tape():
     def get_row(self):
         return self.tape
     
+    def view_ds(self):
+        return self.tape
+    
 class InputTape():
     def __init__(self, input_string: str):
         self.name = None
@@ -122,7 +125,9 @@ class InputTape():
         
     def get_row(self):
         return self.tape
-
+    
+    def view_ds(self):
+        return self.tape
 
 class Tape2D():
     def __init__(self):
@@ -181,6 +186,9 @@ class Tape2D():
         self.tape[self.head_y][self.head_x] = element
     
     def get_tape(self):
+        return self.tape
+    
+    def view_ds(self):
         return self.tape
         
 class InputTape2D():
@@ -241,4 +249,7 @@ class InputTape2D():
         self.tape[self.head_y][self.head_x] = element
     
     def get_tape(self):
+        return self.tape
+    
+    def view_ds(self):
         return self.tape

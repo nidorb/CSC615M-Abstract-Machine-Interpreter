@@ -5,25 +5,13 @@ from parser import MachineParser
 
 if __name__ == '__main__':
     machine_def = """
-.DATA
-TAPE T1
-TAPE T2
-TAPE T3
 .LOGIC
-A] LEFT(T1) (a/a,B), (b/b,C)
-B] RIGHT(T2) (#/X,A)
-C] RIGHT(T2) (#/#,D)
-D] LEFT(T2) (X/#,E)
-E] RIGHT(T3) (#/X,F)
-F] RIGHT(T1) (b/b,E), (c/c,G)
-G] RIGHT(T3) (#/#,H)
-H] LEFT(T3) (X/#,I)
-I] RIGHT(T3) (c/c,H), (#/#,J)
-J] LEFT(T2) (#/#,K)
-K] LEFT(T3) (#/#,accept)
+A] SCAN (0,A), (1,A), (1,B)
+B] SCAN (0,C)
+C] SCAN (1,accept)
 """
 
-    input_tape = "abbbccc"
+    input_tape = "1000101"
 
 
 
@@ -34,6 +22,8 @@ K] LEFT(T3) (#/#,accept)
 
     machine = MachineSimulator(machine_def, input_tape)
     halt = False
+    
+    # machine.step()
 
     
     while machine.active_timelines and not halt:  # Run while there are active timelines
@@ -51,8 +41,8 @@ K] LEFT(T3) (#/#,accept)
         for y in x.memory:
             print(y, x.memory[y])
             
-        #print("DS1: ", x.memory["S1"].view_ds())
-        #print("DS2: ", x.memory["S2"].view_ds())
+        # print("DS1: ", x.memory["S1"].view_ds())
+        # print("DS2: ", x.memory["S2"].view_ds())
         # print("DS2: ", x.memory["Q1"])
         print("Input: Mem: ", x.input_tape)
         print("Head: ", x.input_tape.head_x)
