@@ -8,10 +8,10 @@ if __name__ == '__main__':
 .DATA
 STACK S1
 .LOGIC
-A] WRITE(S1) (#,B)
-B] SCAN RIGHT (0,C), (1,D), (X,E)
-C] WRITE(S1) (Y,B)
-D] WRITE(S1) (Z,B)
+A] WRITE(S1) (#,B), (#,C)
+B] READ(S1) (#,B), (#,E)
+C] SCAN RIGHT (0,C), (1,D), (X,E)
+D] READ(S1) (#,B), (#,E)
 E] SCAN RIGHT (1,E), (0,E), (X,F)
 F] SCAN RIGHT (0,G), (1,H), (#,I)
 G] READ(S1) (Y,F)
