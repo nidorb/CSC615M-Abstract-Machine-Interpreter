@@ -6,21 +6,19 @@ from parser import MachineParser
 if __name__ == '__main__':
     machine_def = """
 .DATA
-TAPE T1
-TAPE T2
-TAPE T3
+QUEUE Q1
+STACK S1
+STACK S2
 .LOGIC
-A] RIGHT(T1) (a/a,B), (a/b,C)
-B] RIGHT(T2) (#/X,A)
-C] RIGHT(T2) (#/#,D)
-D] LEFT(T2) (X/#,E)
-E] RIGHT(T3) (#/X,F)
-F] RIGHT(T1) (b/b,E), (c/c,G)
-G] RIGHT(T3) (#/#,H)
-H] LEFT(T3) (X/#,I)
-I] RIGHT(T3) (c/c,H), (#/#,J)
-J] LEFT(T2) (#/#,K)
-K] LEFT(T3) (#/#,accept)
+A] SCAN (a,B), (b,C), (a,D)
+B] WRITE(Q1) (X,A), (X,C)
+C] READ(Q1) (X,D)
+D] WRITE(Q1) (Y,E)
+E] SCAN (b,C), (c,F)
+F] WRITE(Q1) (#,G)
+G] READ(Q1) (Y,H)
+H] SCAN (c,G), (#,I)
+I] READ(Q1) (#,accept)
 """
 
     input_tape = "abbcc"

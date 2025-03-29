@@ -42,7 +42,7 @@ h1{
 
 .state-container, .step-container {
     width: 100px; /* Adjust width as needed */
-    border: 1px solid #444;
+    border: 2px solid #444;
     background-color: #1e1e1e;
     padding: 10px;
     text-align: center;
@@ -57,7 +57,7 @@ label {
 #inputBox, #outputBox {
     height: 60px;
     width: 100%;
-    border: 1px solid #444; 
+    border: 2px solid #444; 
     background-color: #1e1e1e; 
     color: #e0e0e0; 
     padding: 15px;  /* Ensures space inside the box */
@@ -127,7 +127,7 @@ label {
 
 .right-panel { 
     flex: 1; 
-    border: 1px solid #444; 
+    border: 2px solid #444; 
     padding: 10px; 
     height: 100%; 
     background-color: #1e1e1e; 
@@ -138,7 +138,7 @@ label {
     width: 180px; 
     background-color: #1e1e1e; 
     color: #e0e0e0; 
-    border: 1px solid #444; 
+    border: 2px solid #444; 
     padding: 10px; 
     height:10px;
     margin-bottom: 5px;
@@ -148,7 +148,7 @@ textarea, #editor {
     width: 100%; 
     background-color: #1e1e1e; 
     color: #e0e0e0; 
-    border: 1px solid #444; 
+    border: 2px solid #444; 
     padding: 10px; 
 }
 
@@ -173,7 +173,7 @@ button {
 
 /* scrollbar styles */
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 5px;
     height: 10px;
 }
 
@@ -205,7 +205,7 @@ button {
     height: 150% !important; 
     background-color: #1e1e1e !important; 
     color: #e0e0e0 !important; 
-    border: 1px solid #444; 
+    border: 2px solid #444; 
     padding: 10px;
 }
 
@@ -270,7 +270,7 @@ button {
 select {
     padding: 8px 12px;
     border-radius: 5px;
-    border: 1px solid #444;
+    border: 2px solid #444;
     background-color: #252525;
     color: #ffffff;
     font-size: 14px;
@@ -298,3 +298,43 @@ select::-ms-expand {
     display: none;
 }
 
+.history-container-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.history-container {
+    width: 400px; /* Same width */
+    height: 30px; /* Same height */
+    border: 2px solid #444; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #1E1E1E; /* Dark background */
+    display: flex;
+    align-items: center;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-y: hidden; /* Disable vertical scrolling */
+    white-space: nowrap; /* Prevent text from wrapping */
+    text-overflow: ellipsis;
+}
+
+.history-container::-webkit-scrollbar {
+    height: 5px; /* Make horizontal scrollbar thinner */
+}
+
+#historyBox {
+    font-size: 15px;
+    color: #ffffff;
+    display: inline-block;
+    margin: 20px;
+}
+
+
+.history-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+}

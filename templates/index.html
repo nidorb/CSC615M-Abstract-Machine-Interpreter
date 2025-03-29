@@ -29,6 +29,13 @@
                     <div id="stateBox">-</div>
                 </div>
             </div>
+            <div class="history-container-wrapper">
+                <label for="historyBox">History:</label>
+                <div class="history-container">
+                    <div id="historyBox"></div>
+                </div>
+            </div>
+            
             <div class="step-container-wrapper">
                 <label for="stepBox">Step:</label>
                 <div class="step-container">
@@ -103,6 +110,7 @@
                     document.getElementById("outputBox").innerText = data.output || '-';
                     document.getElementById("stateBox").innerText = data.initial_state || 'Unknown';
                     document.getElementById("stepBox").innerText = data.step_count || '0';
+                    document.getElementById("historyBox").innerText = formatHistory(data.history || []);
         
                     // Clear branch selection
                     const branchSelect = document.getElementById("branchSelect");
@@ -115,6 +123,7 @@
             })
             .catch(error => console.error('Error:', error));
         }
+        
         
         function updateMemory(memory) {
             const memoryContainer = document.querySelector(".memory-container");
@@ -175,6 +184,7 @@
             document.getElementById("stateBox").innerText = selectedBranch.current_state;
             document.getElementById("stepBox").innerText = selectedBranch.step_count;
             document.getElementById("outputBox").innerText = selectedBranch.output || '-';
+            document.getElementById("historyBox").innerText = formatHistory(selectedBranch.history || []);
         
             const memoryContainer = document.querySelector(".memory-container");
             memoryContainer.innerHTML = '<label for="memory">Memory:</label>';
@@ -187,6 +197,12 @@
                     memoryContainer.appendChild(memoryItem);
                 });
             }
+        }
+        
+
+        function formatHistory(history) {
+            if (!history.length) return '-';
+            return history.map((entry, index) => `${entry}`).join(", ");
         }
         
     
