@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from machine_simulator import MachineSimulator
-from aux_data import InputTape
+from aux_data import Tape, Tape2D, Queue, Stack
 from diagram_generator import StateDiagram
 from parser import MachineParser
 import os
@@ -47,12 +47,18 @@ def reset():
         parser = MachineParser(machine_def, input_tape)
         machine = MachineSimulator(machine_def, input_tape)
         step_count = 0
-
+        memory_str = {key: machine.memory[key].view_ds() for key, value in machine.memory.items()}
+        print(memory_str)
+        
         return jsonify({
             "machine_definition": machine_def,
             "input_value": input_tape,
+            "head_x": machine.input_tape.head_x,
+            "head_y": machine.input_tape.head_y,
             "initial_state": parser.initial_state,
-            "memory": {key: str(value) for key, value in machine.memory.items()}
+            "memory": memory_str,
+            "step_count": step_count,
+            "history": machine.history,
         })
 
     
@@ -73,21 +79,35 @@ def step():
         machine.step()
         step_count += 1
 
-        # Get the first active timeline
-        timeline = machine.timelines[0]
-        input_tape = str(timeline.input_tape)
-        print(input_tape)
+        timelines_data = []
+        for timeline in machine.timelines:
+            input_tape = str(timeline.input_tape)
+            if timeline.memory.__class__.__name__ in {"Tape", "Tape2D"}:
+                memory_str = {key: str(value) for key, value in machine.memory.items()}
+            else:
+                memory_str = {key: timeline.memory[key].view_ds() for key, value in machine.memory.items()}
+            
+            timelines_data.append({
+                "input_value": input_tape,
+                "current_state": timeline.state,
+                "head_x": timeline.input_tape.head_x,
+                "head_y": timeline.input_tape.head_y,
+                "output": timeline.output,
+                "memory": memory_str,
+                "step_count": step_count,
+                "history": timeline.history,
+            })
         
+        print(timelines_data)
+
         return jsonify({
-            "input_value": input_tape,
-            "current_state": timeline.state,
-            "step_count": step_count,
-            "output": timeline.output,
-            "memory": {key: str(value) for key, value in machine.memory.items()}
+            "timelines": timelines_data
         })
     
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+
 
 @app.route("/diagram", methods=["POST"])
 def diagram():

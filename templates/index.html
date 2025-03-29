@@ -14,7 +14,7 @@
     <div class="container">
         <div class="input-container">
             <label for="inputBox">Input:</label>
-            <div id="inputBox">#abbcc#</div>
+            <div id="inputBox">##</div>
         </div>
         
         <div class="output-container">
@@ -23,13 +23,17 @@
         </div>
 
         <div class="state-step-wrapper">
-            <div class="state-container">
+            <div class="state-container-wrapper">
                 <label for="stateBox">State:</label>
-                <div id="stateBox">-</div>
+                <div class="state-container">
+                    <div id="stateBox">-</div>
+                </div>
             </div>
-            <div class="step-container">
+            <div class="step-container-wrapper">
                 <label for="stepBox">Step:</label>
-                <div id="stepBox">0</div>
+                <div class="step-container">
+                    <div id="stepBox">0</div>
+                </div>
             </div>
         </div>
         
@@ -41,6 +45,9 @@
             <div class="control-container">
                 <label for="inputField">Input:</label>
                 <input type="text" id="inputField" placeholder="Enter input here...">
+                <label for="branchSelect">Branch:</label>
+                <select id="branchSelect">
+                </select>
                 <button id="Run" onclick="runCode()">Run</button>
                 <button id="Step" onclick="stepCode()">Step</button>
                 <button id="Reset" onclick="resetCode()">Reset</button>
@@ -61,18 +68,19 @@
     </div>
 
     <script>
+        let selectedBranchIndex = 0
         var defaultMachineDef = `.DATA\nTAPE T1\nTAPE T2\nTAPE T3\n.LOGIC\nA] RIGHT(T1) (a/a,B), (b/b,C)\nB] RIGHT(T2) (#/X,A)\nC] RIGHT(T2) (#/#,D)\nD] LEFT(T2) (X/#,E)\nE] RIGHT(T3) (#/X,F)\nF] RIGHT(T1) (b/b,E), (c/c,G)\nG] RIGHT(T3) (#/#,H)\nH] LEFT(T3) (X/#,I)\nI] RIGHT(T3) (c/c,H), (#/#,J)\nJ] LEFT(T2) (#/#,K)\nK] LEFT(T3) (#/#,accept)`;
-
+    
         var editor = CodeMirror(document.getElementById("editor"), {
             mode: null,
             lineNumbers: true,
         });
-
+    
         window.onload = function() {
-            editor.setValue(`.DATA\nTAPE T1\nTAPE T2\nTAPE T3\n.LOGIC\nA] RIGHT(T1) (a/a,B), (b/b,C)\nB] RIGHT(T2) (#/X,A)\nC] RIGHT(T2) (#/#,D)\nD] LEFT(T2) (X/#,E)\nE] RIGHT(T3) (#/X,F)\nF] RIGHT(T1) (b/b,E), (c/c,G)\nG] RIGHT(T3) (#/#,H)\nH] LEFT(T3) (X/#,I)\nI] RIGHT(T3) (c/c,H), (#/#,J)\nJ] LEFT(T2) (#/#,K)\nK] LEFT(T3) (#/#,accept)`);
+            editor.setValue(defaultMachineDef);
             document.getElementById("inputField").value = "abbcc";
         };
-
+    
         function resetCode() {
             const userInput = document.getElementById("inputField").value;
             const machineDefinition = editor.getValue();
@@ -91,29 +99,37 @@
                     console.error("Parsing Error:", data.error);
                 } else {
                     editor.setValue(data.machine_definition || '');
-                    document.getElementById("inputBox").innerText = data.input_value || '';
+                    document.getElementById("inputBox").innerText = `#${data.input_value || ''}#`;
                     document.getElementById("outputBox").innerText = data.output || '-';
                     document.getElementById("stateBox").innerText = data.initial_state || 'Unknown';
                     document.getElementById("stepBox").innerText = data.step_count || '0';
         
-                    // Update memory container
-                    const memoryContainer = document.querySelector(".memory-container");
-                    memoryContainer.innerHTML = '<label for="memory">Memory:</label>'; // Clear previous contents
-                    
-                    if (data.memory) {
-                        Object.entries(data.memory).forEach(([key, value]) => {
-                            const memoryItem = document.createElement("div");
-                            memoryItem.className = "memory-item";
-                            memoryItem.innerText = `${key}: ${value}`;
-                            memoryContainer.appendChild(memoryItem);
-                        });
-                    }
+                    // Clear branch selection
+                    const branchSelect = document.getElementById("branchSelect");
+                    branchSelect.innerHTML = ""; // Remove all branches
+                    selectedBranchIndex = 0; // Reset stored selection
+        
+                    // Update memory
+                    updateMemory(data.memory || {});
                 }
             })
             .catch(error => console.error('Error:', error));
         }
         
-
+        function updateMemory(memory) {
+            const memoryContainer = document.querySelector(".memory-container");
+            memoryContainer.innerHTML = '<label for="memory">Memory:</label>';
+            
+            Object.entries(memory).forEach(([key, value]) => {
+                const memoryItem = document.createElement("div");
+                memoryItem.className = "memory-item";
+                memoryItem.innerHTML = `${key}:<br>${value.replace(/\n/g, "<br>")}`;
+                memoryContainer.appendChild(memoryItem);
+            });
+        }
+        
+        
+    
         function stepCode() {
             fetch('/step', {
                 method: 'POST',
@@ -124,26 +140,56 @@
                 if (data.error) {
                     console.error("Step Error:", data.error);
                 } else {
-                    document.getElementById("inputBox").innerText = data.input_value || '';
-                    document.getElementById("stateBox").innerText = data.current_state || 'Unknown';
-                    document.getElementById("stepBox").innerText = data.step_count || '0';
-                    document.getElementById("outputBox").innerText = data.output || '-';
-
-                    const memoryContainer = document.querySelector(".memory-container");
-                    memoryContainer.innerHTML = '<label for="memory">Memory:</label>'; // Clear previous contents
-                    
-                    if (data.memory) {
-                        Object.entries(data.memory).forEach(([key, value]) => {
-                            const memoryItem = document.createElement("div");
-                            memoryItem.className = "memory-item";
-                            memoryItem.innerText = `${key}: ${value}`;
-                            memoryContainer.appendChild(memoryItem);
-                        });
+                    const branchSelect = document.getElementById("branchSelect");
+                    branchSelect.innerHTML = ""; // Clear previous options
+        
+                    data.timelines.forEach((timeline, index) => {
+                        const option = document.createElement("option");
+                        option.value = index;
+                        option.textContent = `Branch ${index + 1}`;
+                        branchSelect.appendChild(option);
+                    });
+        
+                    // Ensure that the previously selected branch is maintained
+                    if (selectedBranchIndex >= data.timelines.length) {
+                        selectedBranchIndex = 0; // Reset if out of bounds
                     }
+        
+                    branchSelect.value = selectedBranchIndex; // Keep selection
+        
+                    // Update UI based on selected branch
+                    updateState(data.timelines[selectedBranchIndex]);
+        
+                    // Change event listener to update global selection
+                    branchSelect.onchange = function() {
+                        selectedBranchIndex = parseInt(branchSelect.value);
+                        updateState(data.timelines[selectedBranchIndex]);
+                    };
                 }
             })
             .catch(error => console.error('Error:', error));
         }
+        
+        function updateState(selectedBranch) {
+            document.getElementById("inputBox").innerText = selectedBranch.input_value;
+            document.getElementById("stateBox").innerText = selectedBranch.current_state;
+            document.getElementById("stepBox").innerText = selectedBranch.step_count;
+            document.getElementById("outputBox").innerText = selectedBranch.output || '-';
+        
+            const memoryContainer = document.querySelector(".memory-container");
+            memoryContainer.innerHTML = '<label for="memory">Memory:</label>';
+            
+            if (selectedBranch.memory) {
+                Object.entries(selectedBranch.memory).forEach(([key, value]) => {
+                    const memoryItem = document.createElement("div");
+                    memoryItem.className = "memory-item";
+                    memoryItem.innerHTML = `${key}:<br>${value.replace(/\n/g, "<br>")}`;
+                    memoryContainer.appendChild(memoryItem);
+                });
+            }
+        }
+        
+    
         function showDiagram() {
             const userInput = document.getElementById("inputField").value;
             const machineDefinition = editor.getValue();
@@ -177,7 +223,6 @@
                 modal.style.display = "none";
             }
         }
-
     </script>
 </body>
 </html>

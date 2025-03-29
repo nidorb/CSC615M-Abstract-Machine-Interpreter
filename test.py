@@ -10,7 +10,7 @@ TAPE T1
 TAPE T2
 TAPE T3
 .LOGIC
-A] RIGHT(T1) (a/a,B), (b/b,C)
+A] RIGHT(T1) (a/a,B), (a/b,C)
 B] RIGHT(T2) (#/X,A)
 C] RIGHT(T2) (#/#,D)
 D] LEFT(T2) (X/#,E)

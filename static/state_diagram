@@ -10,7 +10,7 @@ digraph {
 	I [label=R fillcolor=yellow shape=circle style=filled]
 	J [label=L fillcolor=yellow shape=circle style=filled]
 	K [label=L fillcolor=yellow shape=circle style=filled]
-	A -> Z [label=a]
+	A -> B [label=a]
 	A -> C [label=b]
 	B -> A [label="#/X"]
 	C -> D [label="#"]

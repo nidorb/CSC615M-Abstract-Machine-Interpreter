@@ -21,7 +21,7 @@ class Stack():
             return self.stack[-1]
             
     def view_ds(self):
-        return self.stack
+        return "".join(map(str, self.stack))
     
 class Queue():
     def __init__(self):
@@ -46,7 +46,8 @@ class Queue():
             return self.queue[0]
         
     def view_ds(self):
-        return self.queue
+        return "".join(map(str, self.queue))
+    
     
 class Tape():
     def __init__(self):
@@ -86,7 +87,7 @@ class Tape():
         return self.tape
     
     def view_ds(self):
-        return self.tape
+        return ''.join(self.tape)
     
 class InputTape():
     def __init__(self, input_string: str):
@@ -191,7 +192,8 @@ class Tape2D():
         return self.tape
     
     def view_ds(self):
-        return self.tape
+        return "\n".join(["".join(row) for row in self.tape])
+
         
 class InputTape2D():
     def __init__(self, input_string: str):
@@ -254,4 +256,4 @@ class InputTape2D():
         return self.tape
     
     def view_ds(self):
-        return self.tape
+        return "\n".join(["".join(row) for row in self.tape])
