@@ -3,60 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Code Editor</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        textarea { width: 100%; height: 100px; }
-        .editor-container { border: 1px solid #ccc; }
-        .output { background: #f4f4f4; padding: 10px; min-height: 50px; }
-    </style>
+    <title>Code Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.0/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <h1>Abstract Machine Interpreter</h1>
+    <div class="container">
+        <div class="input-container">
+            <label for="inputBox">Input:</label>
+            <div id="inputBox">#abbcc#</div>
+        </div>
+        
+        <div class="output-container">
+            <label for="outputBox">Output:</label>
+            <div id="outputBox">-</div>
+        </div>
 
-    <h2>Python Code Editor</h2>
-    <label for="input-box">Input:</label>
-    <textarea id="input-box" placeholder="Enter input..."></textarea>
-
-    <div class="editor-container">
-        <textarea id="code-editor"></textarea>
+        <div class="state-step-wrapper">
+            <div class="state-container">
+                <label for="stateBox">State:</label>
+                <div id="stateBox">-</div>
+            </div>
+            <div class="step-container">
+                <label for="stepBox">Step:</label>
+                <div id="stepBox">0</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="editor-container">
+                <label for="editor">Machine Definition:</label>
+                <div id="editor"></div>
+            </div>
+            <div class="control-container">
+                <label for="inputField">Input:</label>
+                <input type="text" id="inputField" placeholder="Enter input here...">
+                <button id="Run" onclick="runCode()">Run</button>
+                <button id="Step" onclick="stepCode()">Step</button>
+                <button id="Reset" onclick="resetCode()">Reset</button>
+                <button id="Diagram" onclick="showDiagram()">Show State Diagram</button>
+            
+                <div id="diagramModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeDiagram()">&times;</span>
+                        <img src="{{ url_for('static', filename='state_diagram.png') }}" alt="State Diagram">
+                    </div>
+                </div>
+            
+            </div>
+            <div class="memory-container">
+                <label for="memory">Memory:</label>
+            </div>
+        </div>
     </div>
 
-    <button onclick="runCode()">Run</button>
-    <button onclick="stepCode()">Step</button>
-    <button onclick="resetCode()">Reset</button>
-
-    <h3>Output:</h3>
-    <pre class="output" id="output"></pre>
-
     <script>
-        var editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
-            mode: "python",
+        var defaultMachineDef = `.DATA\nTAPE T1\nTAPE T2\nTAPE T3\n.LOGIC\nA] RIGHT(T1) (a/a,B), (b/b,C)\nB] RIGHT(T2) (#/X,A)\nC] RIGHT(T2) (#/#,D)\nD] LEFT(T2) (X/#,E)\nE] RIGHT(T3) (#/X,F)\nF] RIGHT(T1) (b/b,E), (c/c,G)\nG] RIGHT(T3) (#/#,H)\nH] LEFT(T3) (X/#,I)\nI] RIGHT(T3) (c/c,H), (#/#,J)\nJ] LEFT(T2) (#/#,K)\nK] LEFT(T3) (#/#,accept)`;
+
+        var editor = CodeMirror(document.getElementById("editor"), {
+            mode: null,
             lineNumbers: true,
-            theme: "default"
         });
 
-        function runCode() {
-            var code = editor.getValue();
-            $.ajax({
-                url: "/run",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ code: code }),
-                success: function(response) {
-                    document.getElementById("output").textContent = response.error ? response.error : response.output;
-                }
-            });
-        }
+        window.onload = function() {
+            editor.setValue(`.DATA\nTAPE T1\nTAPE T2\nTAPE T3\n.LOGIC\nA] RIGHT(T1) (a/a,B), (b/b,C)\nB] RIGHT(T2) (#/X,A)\nC] RIGHT(T2) (#/#,D)\nD] LEFT(T2) (X/#,E)\nE] RIGHT(T3) (#/X,F)\nF] RIGHT(T1) (b/b,E), (c/c,G)\nG] RIGHT(T3) (#/#,H)\nH] LEFT(T3) (X/#,I)\nI] RIGHT(T3) (c/c,H), (#/#,J)\nJ] LEFT(T2) (#/#,K)\nK] LEFT(T3) (#/#,accept)`);
+            document.getElementById("inputField").value = "abbcc";
+        };
 
         function resetCode() {
-            editor.setValue("");
-            document.getElementById("output").textContent = "";
+            const userInput = document.getElementById("inputField").value;
+            const machineDefinition = editor.getValue();
+        
+            fetch('/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    machine_definition: machineDefinition, 
+                    user_input: userInput 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("Parsing Error:", data.error);
+                } else {
+                    editor.setValue(data.machine_definition || '');
+                    document.getElementById("inputBox").innerText = data.input_value || '';
+                    document.getElementById("outputBox").innerText = data.output || '-';
+                    document.getElementById("stateBox").innerText = data.initial_state || 'Unknown';
+                    document.getElementById("stepBox").innerText = data.step_count || '0';
+        
+                    // Update memory container
+                    const memoryContainer = document.querySelector(".memory-container");
+                    memoryContainer.innerHTML = '<label for="memory">Memory:</label>'; // Clear previous contents
+                    
+                    if (data.memory) {
+                        Object.entries(data.memory).forEach(([key, value]) => {
+                            const memoryItem = document.createElement("div");
+                            memoryItem.className = "memory-item";
+                            memoryItem.innerText = `${key}: ${value}`;
+                            memoryContainer.appendChild(memoryItem);
+                        });
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
-    </script>
+        
 
+        function stepCode() {
+            fetch('/step', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("Step Error:", data.error);
+                } else {
+                    document.getElementById("inputBox").innerText = data.input_value || '';
+                    document.getElementById("stateBox").innerText = data.current_state || 'Unknown';
+                    document.getElementById("stepBox").innerText = data.step_count || '0';
+                    document.getElementById("outputBox").innerText = data.output || '-';
+
+                    const memoryContainer = document.querySelector(".memory-container");
+                    memoryContainer.innerHTML = '<label for="memory">Memory:</label>'; // Clear previous contents
+                    
+                    if (data.memory) {
+                        Object.entries(data.memory).forEach(([key, value]) => {
+                            const memoryItem = document.createElement("div");
+                            memoryItem.className = "memory-item";
+                            memoryItem.innerText = `${key}: ${value}`;
+                            memoryContainer.appendChild(memoryItem);
+                        });
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        function showDiagram() {
+            const userInput = document.getElementById("inputField").value;
+            const machineDefinition = editor.getValue();
+        
+            fetch('/diagram', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    machine_definition: machineDefinition,
+                    user_input: userInput
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("Diagram Error:", data.error);
+                } else {
+                    document.querySelector("#diagramModal img").src = data.diagram_url + "?t=" + new Date().getTime();
+                    document.getElementById("diagramModal").style.display = "flex";
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+        function closeDiagram() {
+            document.getElementById("diagramModal").style.display = "none";
+        }
+        window.onclick = function(event) {
+            var modal = document.getElementById("diagramModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+
+    </script>
 </body>
 </html>

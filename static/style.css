@@ -1,0 +1,241 @@
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 20px; 
+    background-color: #2C2B2B; 
+    color: #e0e0e0; 
+}
+
+h1{
+    font-size: 48px; 
+    margin-bottom: 20px; 
+    color: #e0e0e0; 
+    text-align: center;
+    justify-content: center;
+}
+
+.container { 
+    display: flex; 
+    flex-direction: column; 
+    max-width: 1600px; 
+    margin: auto; 
+}
+
+.input-container, .output-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.state-step-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.state-container, .step-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #444;
+    background-color: #1e1e1e;
+    padding: 10px;
+    text-align: center;
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+#inputBox, #outputBox {
+    min-height: 40px;
+    width: 100%;
+    border: 1px solid #444; 
+    background-color: #1e1e1e; 
+    color: #e0e0e0; 
+    padding: 10px; 
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.main-content {
+    display: flex;
+    align-items: flex-start; /* Align items at the top */
+    gap: 20px;
+}
+
+.editor-container { 
+    flex: 3; /* Allow it to take most of the space */
+    display: flex; 
+    flex-direction: column; 
+}
+
+.control-container { 
+    flex: 1; /* Reduce its size to minimize gap */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width:50px;
+    background-color: #1e1e1e;
+    padding: 20px; /* Reduce padding to decrease the gap */
+    margin-top:20px;
+    padding-top: 20px;
+}
+
+.memory-container { 
+    flex: 1; /* Adjust to balance layout */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #1e1e1e;
+    height:290px;
+    padding: 20px;
+    margin-top:20px;
+    padding-top: 20px;
+}
+
+#editor { 
+    width: 100%; 
+    height: 300px; /* Adjust height */
+}
+
+.CodeMirror { 
+    width: 100% !important;
+    height: 300px !important;
+}
+
+.right-panel { 
+    flex: 1; 
+    border: 1px solid #444; 
+    padding: 10px; 
+    height: 100%; 
+    background-color: #1e1e1e; 
+    color: #e0e0e0; 
+}
+
+#inputField{
+    width: 200px; 
+    background-color: #1e1e1e; 
+    color: #e0e0e0; 
+    border: 1px solid #444; 
+    padding: 10px; 
+    height:15px;
+    margin-bottom: 10px;
+}
+
+textarea, #editor { 
+    width: 100%; 
+    background-color: #1e1e1e; 
+    color: #e0e0e0; 
+    border: 1px solid #444; 
+    padding: 10px; 
+}
+
+#editor { 
+    height: 200px; 
+}
+
+button { 
+    margin-bottom: 10px; 
+    padding: 10px; 
+    cursor: pointer; 
+    width:200px;
+    background-color: #333;
+    color: #e0e0e0;
+}
+
+/* scrollbar styles */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+
+/* CodeMirror specific styles */
+#editor {
+    width: 50%;
+    height: 200px; 
+    border: none;
+    padding: 0;
+}
+
+.CodeMirror { 
+    width: 150% !important; 
+    height: 150% !important; 
+    background-color: #1e1e1e !important; 
+    color: #e0e0e0 !important; 
+    border: 1px solid #444; 
+    padding: 10px;
+}
+
+.CodeMirror-gutters {
+    background: #1e1e1e !important;
+    border-right: 1px solid #444 !important;
+}
+
+.CodeMirror-cursor {
+    border-left: 2px solid #e0e0e0 !important;
+}
+
+#diagramContainer {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#diagramContainer img {
+    max-width: 80%;
+    height: auto;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background: white;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    text-align: center;
+}
+.modal-content img {
+    max-width: 65%;
+    max-height: 65%;
+}
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}

@@ -19,7 +19,7 @@ class MachineSimulator:
         self.active_timelines = [self]
         self.accepted_timelines = []
         
-        self.output = []
+        self.output = ""
         
     def step(self):
         new_timelines = []
@@ -77,7 +77,7 @@ class MachineSimulator:
                         new_machine.state = state
 
                         if command == "PRINT":
-                            new_machine.output.append(x)
+                            new_machine.output += str(x)
                         else:
                             ds = new_machine.memory[memory_object]
                             if command == "WRITE":
@@ -250,9 +250,7 @@ class MachineSimulator:
             self.halt = True
         elif self.state not in self.logic:
             self.halt = True
-            self.state = "reject"
-            print("Reject")
-            self.history.append("reject")
+            self.history.append(self.state)
             
     def check_mark_tape(self, tape, command, element, replacement):
         if element == "#" and replacement != "#":
@@ -269,6 +267,9 @@ class MachineSimulator:
                 tape.head_x += 1
             elif tape.head_x == len(tape.get_row()) - 1:
                 tape.add_right()
+    
+    def get_memory(self):
+        return self.memory
 
     
 

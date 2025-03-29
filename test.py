@@ -6,29 +6,24 @@ from parser import MachineParser
 if __name__ == '__main__':
     machine_def = """
 .DATA
-STACK S1
+TAPE T1
+TAPE T2
+TAPE T3
 .LOGIC
-A] WRITE(S1) (#,B), (#,C)
-B] READ(S1) (#,B), (#,E)
-C] SCAN RIGHT (0,C), (1,D), (X,E)
-D] READ(S1) (#,B), (#,E)
-E] SCAN RIGHT (1,E), (0,E), (X,F)
-F] SCAN RIGHT (0,G), (1,H), (#,I)
-G] READ(S1) (Y,F)
-H] READ(S1) (Z,F)
-I] READ(S1) (#,J)
-J] WRITE(S1) (#,K)
-K] SCAN LEFT (0,L), (1,M), (X,N)
-L] WRITE(S1) (Y,K)
-M] WRITE(S1) (Z,K)
-N] SCAN LEFT (0,O), (1,P), (X,Q)
-O] READ(S1) (Y,N)
-P] READ(S1) (Z,N)
-Q] READ(S1) (#,accept)
-
+A] RIGHT(T1) (a/a,B), (b/b,C)
+B] RIGHT(T2) (#/X,A)
+C] RIGHT(T2) (#/#,D)
+D] LEFT(T2) (X/#,E)
+E] RIGHT(T3) (#/X,F)
+F] RIGHT(T1) (b/b,E), (c/c,G)
+G] RIGHT(T3) (#/#,H)
+H] LEFT(T3) (X/#,I)
+I] RIGHT(T3) (c/c,H), (#/#,J)
+J] LEFT(T2) (#/#,K)
+K] LEFT(T3) (#/#,accept)
 """
 
-    input_tape = "010101X010101X101010"
+    input_tape = "abbcc"
     parser = MachineParser(machine_def, input_tape)
     StateDiagram(parser.logic, parser.initial_state)
     machine = MachineSimulator(machine_def, input_tape)
@@ -49,14 +44,19 @@ Q] READ(S1) (#,accept)
 
             # Print all memory values
             print("\nMemory:")
+            print("machine.memory", timeline.memory)
             for key, value in timeline.memory.items():
                 print(f"{key}: {value}")
                 print(timeline.memory[key].view_ds())
+                if timeline.memory[key].__class__.__name__ in {"Tape", "Tape2D"}:
+                    print(timeline.memory[key].head_x)
+                    print(timeline.memory[key].head_y)
 
             # Print input tape information
             print("\nInput Tape:")
             print(f"Memory: {timeline.input_tape}")
-            print(f"Head Position: {timeline.input_tape.head_x}")
+            print(f"Head Position x: {timeline.input_tape.head_x}")
+            print(f"Head Position y: {timeline.input_tape.head_y}")
             print(f"Head Value: {timeline.input_tape.get_element()}")
 
             # Print transition history

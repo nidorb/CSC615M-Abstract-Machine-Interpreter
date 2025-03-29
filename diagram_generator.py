@@ -53,5 +53,4 @@ class StateDiagram:
                 else:
                     dot.edge(state, str(next_states), label=edge_value)
 
-
-        dot.render("state_diagram", view=True)
+        dot.render("./static/state_diagram")

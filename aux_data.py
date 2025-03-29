@@ -52,6 +52,7 @@ class Tape():
     def __init__(self):
         self.tape = ['#'] + ['#']
         self.head_x = 0
+        self.head_y = None
     
     def __repr__(self):
         return "".join(self.tape)
@@ -92,6 +93,7 @@ class InputTape():
         self.name = None
         self.tape = ['#'] + list(input_string) + ['#']
         self.head_x = 0
+        self.head_y = None
         
     def __repr__(self):
         return "".join(self.tape)
