@@ -46,7 +46,6 @@ def reset():
         # Initialize the parser and machine
         parser = MachineParser(machine_def, input_tape)
         machine = MachineSimulator(machine_def, input_tape)
-        step_count = 0
         memory_str = {key: machine.memory[key].view_ds() for key, value in machine.memory.items()}
         print(memory_str)
         
@@ -57,7 +56,7 @@ def reset():
             "head_y": machine.input_tape.head_y,
             "initial_state": parser.initial_state,
             "memory": memory_str,
-            "step_count": step_count,
+            "step_count": machine.step_count,
             "history": machine.history,
         })
 
@@ -77,7 +76,6 @@ def step():
 
     try:
         machine.step()
-        step_count += 1
 
         timelines_data = []
         for timeline in machine.timelines:
@@ -94,7 +92,7 @@ def step():
                 "head_y": timeline.input_tape.head_y,
                 "output": timeline.output,
                 "memory": memory_str,
-                "step_count": step_count,
+                "step_count": timeline.step_count,
                 "history": timeline.history,
             })
         
@@ -106,7 +104,6 @@ def step():
     
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-
 
 
 @app.route("/diagram", methods=["POST"])

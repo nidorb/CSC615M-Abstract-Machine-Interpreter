@@ -10,7 +10,7 @@ QUEUE Q1
 STACK S1
 STACK S2
 .LOGIC
-A] SCAN (a,B), (b,C), (a,D)
+A] WRITE(Q1) (X,A), (X,C)
 B] WRITE(Q1) (X,A), (X,C)
 C] READ(Q1) (X,D)
 D] WRITE(Q1) (Y,E)
@@ -42,9 +42,7 @@ I] READ(Q1) (#,accept)
 
             # Print all memory values
             print("\nMemory:")
-            print("machine.memory", timeline.memory)
             for key, value in timeline.memory.items():
-                print(f"{key}: {value}")
                 print(timeline.memory[key].view_ds())
                 if timeline.memory[key].__class__.__name__ in {"Tape", "Tape2D"}:
                     print(timeline.memory[key].head_x)
@@ -59,8 +57,7 @@ I] READ(Q1) (#,accept)
 
             # Print transition history
             print("\nHistory:")
-            for entry in timeline.history:
-                print(entry)
+            print(timeline.history)
 
             # Print output (if applicable)
             print("\nOutput:")

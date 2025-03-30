@@ -19,6 +19,8 @@ class MachineSimulator:
         self.active_timelines = [self]
         self.accepted_timelines = []
         
+        self.step_count = 0
+        
         self.output = ""
         
     def step(self):
@@ -28,7 +30,7 @@ class MachineSimulator:
             #skipped halt states
             if machine.halt:
                 continue
-            
+            machine.step_count +=1
             element = machine.input_tape.get_element() # read input
             command = machine.logic[machine.state]["command"]
             transitions = machine.logic[machine.state]["transitions"]
@@ -71,8 +73,14 @@ class MachineSimulator:
                     machine.halt = True
                 
             elif command in {"PRINT", "WRITE"}: #NFA for all transitions (no checking)
+                firstkey, firststates = next(iter(transitions.items()))
+
                 for x in transitions:
                     for state in transitions[x]:
+                        if x == firstkey and state == firststates[0]:
+                            print("skip", x, state)
+                            continue
+
                         new_machine = copy.deepcopy(machine)
                         new_machine.state = state
 
@@ -87,8 +95,17 @@ class MachineSimulator:
                         new_machine.handle_state_termination()
                         new_timelines.append(new_machine)
                         
-                
-                self.timelines.remove(machine)
+                        
+                machine.state = firststates[0]
+                if command == "PRINT":
+                    machine.output += str(firstkey)
+                else:
+                    ds = machine.memory[memory_object]
+                    if command == "WRITE":
+                        ds.push(firstkey)
+
+                machine.history.append(machine.state)
+                machine.handle_state_termination()               
             
             elif command == "READ":
                 ds = machine.memory[memory_object]
@@ -177,8 +194,7 @@ class MachineSimulator:
                     machine.state = "reject"
                     machine.halt = True
             
-            elif command in {"UP", "DOWN"}:
-                
+            elif command in {"UP", "DOWN"}: 
                 isInputTape = False
                 if memory_object == machine.input_tape.name:
                     tape = machine.input_tape

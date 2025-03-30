@@ -55,18 +55,21 @@ label {
 }
 
 #inputBox, #outputBox {
-    height: 60px;
+    height: 100px;
+    max-height: 100px;
     width: 100%;
-    border: 2px solid #444; 
-    background-color: #1e1e1e; 
-    color: #e0e0e0; 
-    padding: 15px;  /* Ensures space inside the box */
+    border: 2px solid #444;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    padding: 15px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: left;
-    margin-bottom: 30px;
     overflow-y: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
     border-radius: 5px;
+    margin-bottom: 30px;
 }
 
 /* Ensures the text inside always has a top and bottom margin */
@@ -103,6 +106,14 @@ label {
     margin-left: -200px;
 }
 
+.memory-item{
+    padding: 10px;
+    height:100px;
+    min-height: 75px;
+    max-height:75px;
+    overflow: auto;
+}
+
 .memory-container { 
     flex: 1;
     display: flex;
@@ -113,6 +124,8 @@ label {
     padding: 20px;
     margin-top:20px;
     padding-top: 20px;
+    max-height: 282px;
+    overflow:auto;
 }
 
 #editor { 
