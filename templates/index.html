@@ -56,6 +56,7 @@
                 <select id="branchSelect">
                 </select>
                 <button id="Run" onclick="runCode()">Run</button>
+                <button id="Stop">Stop</button>
                 <button id="Step" onclick="stepCode()">Step</button>
                 <button id="Reset" onclick="resetCode()">Reset</button>
                 <button id="Diagram" onclick="showDiagram()">Show State Diagram</button>
@@ -119,6 +120,77 @@
             editor.setValue(defaultMachineDef);
             document.getElementById("inputField").value = "abbcc";
         };
+
+        let runInterval = null; // Store interval reference
+
+        function runCode() {
+            if (runInterval) return; // Prevent multiple intervals
+
+            runInterval = setInterval(() => {
+                fetch('/step', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Step Error:", data.error);
+                        clearInterval(runInterval);
+                        runInterval = null;
+                    } else {
+                        const branchSelect = document.getElementById("branchSelect");
+                        branchSelect.innerHTML = ""; // Clear previous options
+
+                        data.timelines.forEach((timeline, index) => {
+                            const status = timeline.status || "Unknown";
+                            const option = document.createElement("option");
+
+                            let statusText = "";
+                            if (status === "Active") statusText = "(Active)";
+                            else if (status === "Rejected") statusText = "(Rejected)";
+                            else if (status === "Accepted") statusText = "(Accepted)";
+                            else statusText = "(Unknown)";
+
+                            option.value = index;
+                            option.textContent = `${index + 1} ${statusText}`;
+                            branchSelect.appendChild(option);
+                        });
+
+                        if (selectedBranchIndex >= data.timelines.length) {
+                            selectedBranchIndex = 0;
+                        }
+
+                        branchSelect.value = selectedBranchIndex;
+
+                        branchSelect.onchange = function () {
+                            selectedBranchIndex = parseInt(branchSelect.value);
+                            updateState(data.timelines[selectedBranchIndex]);
+                        };
+
+                        updateState(data.timelines[selectedBranchIndex]);
+
+                        if (data.timelines[selectedBranchIndex].status === "Accepted" || 
+                            data.timelines[selectedBranchIndex].status === "Rejected") {
+                            clearInterval(runInterval);
+                            runInterval = null;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    clearInterval(runInterval);
+                    runInterval = null;
+                });
+            }, 150);
+        }
+
+        document.getElementById("Stop").addEventListener("click", () => {
+            if (runInterval) {
+                clearInterval(runInterval);
+                runInterval = null;
+            }
+        });
+
     
         function resetCode() {
             const userInput = document.getElementById("inputField").value;
@@ -151,6 +223,7 @@
         
                     // Update memory
                     updateMemory(data.memory || {});
+                    updateButtonStates(data.status);
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -215,7 +288,7 @@
                     updateState(data.timelines[selectedBranchIndex]);
         
                     // Change event listener to update global selection
-                    branchSelect.onchange = function() {
+                    branchSelect.onchange = function () {
                         selectedBranchIndex = parseInt(branchSelect.value);
                         updateState(data.timelines[selectedBranchIndex]);
                     };
@@ -242,7 +315,25 @@
                     memoryContainer.appendChild(memoryItem);
                 });
             }
+        
+            updateButtonStates(selectedBranch.status);
         }
+        
+        function updateButtonStates(status) {
+            const buttons = ["Run", "Stop", "Step"];
+            const isActive = status === "Active";
+        
+            buttons.forEach(id => {
+                const button = document.getElementById(id);
+                if (button) {
+                    button.disabled = !isActive;
+                    button.style.backgroundColor = isActive ? "" : "grey";
+                    button.style.color = isActive ? "" : "black";
+                    button.style.cursor = isActive ? "pointer" : "disabled ";
+                }
+            });
+        }
+        
         
 
         function formatHistory(history) {

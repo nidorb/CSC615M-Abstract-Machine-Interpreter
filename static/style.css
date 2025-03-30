@@ -102,7 +102,7 @@ label {
     padding: 20px;
     margin-top:20px;
     padding-top: 20px;
-    height:282px;
+    height:302px;
     margin-left: -200px;
 }
 
@@ -120,22 +120,22 @@ label {
     flex-direction: column;
     gap: 10px;
     background-color: #1e1e1e;
-    height:282px;
+    height:302px;
     padding: 20px;
     margin-top:20px;
     padding-top: 20px;
-    max-height: 282px;
+    max-height: 302px;
     overflow:auto;
 }
 
 #editor { 
     width: 100%; 
-    height: 400px;
+    height: 420px;
 }
 
 .CodeMirror { 
     width: 100% !important;
-    height: 300px !important;
+    height: 320px !important;
 }
 
 .right-panel { 
@@ -166,7 +166,7 @@ textarea, #editor {
 }
 
 #editor { 
-    height: 200px; 
+    height: 220px; 
 }
 
 button { 
@@ -175,7 +175,7 @@ button {
     width: 200px;
     background-color: #333;
     color: #e0e0e0;
-    height: 25px; /* Increase height to properly center text */
+    height: 20px; /* Increase height to properly center text */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -215,7 +215,7 @@ button {
 
 .CodeMirror { 
     width: 150% !important; 
-    height: 150% !important; 
+    height: 322px !important; 
     background-color: #1e1e1e !important; 
     color: #e0e0e0 !important; 
     border: 2px solid #444; 

@@ -38,8 +38,12 @@ class MachineSimulator:
                         
             if command in {"SCAN", "SCAN RIGHT", "SCAN LEFT"}:
                 if command == "SCAN LEFT":
-                    if not machine.input_tape.can_move("LEFT"): #checks if tape is at #
+                    if not machine.input_tape.can_move("LEFT"):
                         machine.input_tape.add_left()
+                        # machine.halt = True
+                        # machine.history.append("reject")
+                        # machine.state = "reject"
+                        # continue
                     machine.input_tape.move_head("LEFT")
                     
                 else:
@@ -147,6 +151,10 @@ class MachineSimulator:
                 if command == "LEFT":
                     if not tape.can_move("LEFT"): #checks if tape is at #
                         tape.add_left()
+                        # machine.halt = True
+                        # machine.history.append("reject")
+                        # machine.state = "reject"
+                        # continue
                     tape.move_head("LEFT")
                                     
                 elif command == "RIGHT":
@@ -266,7 +274,6 @@ class MachineSimulator:
             self.halt = True
         elif self.state not in self.logic:
             self.halt = True
-            self.history.append(self.state)
             
     def check_mark_tape(self, tape, command, element, replacement):
         if element == "#" and replacement != "#":
