@@ -41,17 +41,19 @@ def reset():
     data = request.get_json()
     machine_def = data.get("machine_definition", DEFAULT_MACHINE_DEF)
     input_tape = data.get("user_input", DEFAULT_INPUT)
+    head_indicator = "⬆"
+
+    input_with_head = f"#{input_tape}#\n{head_indicator}" 
 
     try:
         # Initialize the parser and machine
         parser = MachineParser(machine_def, input_tape)
         machine = MachineSimulator(machine_def, input_tape)
         memory_str = {key: machine.memory[key].view_ds() for key, value in machine.memory.items()}
-        print(memory_str)
         
         return jsonify({
             "machine_definition": machine_def,
-            "input_value": input_tape,
+            "input_value": input_with_head,
             "head_x": machine.input_tape.head_x,
             "head_y": machine.input_tape.head_y,
             "initial_state": parser.initial_state,
@@ -80,21 +82,33 @@ def step():
 
         timelines_data = []
         for timeline in machine.timelines:
-            input_tape = str(timeline.input_tape)
-            if timeline.memory.__class__.__name__ in {"Tape", "Tape2D"}:
-                memory_str = {key: str(value) for key, value in machine.memory.items()}
+            if timeline.input_tape.head_y is not None:
+                # 2D Tape Handling
+                tape_str = timeline.input_tape.view_ds()
+                rows = tape_str.split("\n")
+                head_x, head_y = timeline.input_tape.head_x, timeline.input_tape.head_y
+                
+                if 0 <= head_y < len(rows):
+                    head_row = " " * head_x + "⬆"
+                    rows.insert(head_y + 1, head_row)
+                input_with_head = "\n".join(rows)
             else:
+                # 1D Tape Handling
+                input_tape = str(timeline.input_tape)
+                head_indicator = " " * timeline.input_tape.head_x + "⬆"
+                input_with_head = f"{input_tape}\n{head_indicator}"
+                
                 memory_str = {key: timeline.memory[key].view_ds() for key, value in machine.memory.items()}
-            
+                                                
             if timeline.state == "accept":
                 status = "Accepted"
             elif timeline.state == "reject":
                 status = "Rejected"
             else:
                 status = "Active"
-            
+
             timelines_data.append({
-                "input_value": input_tape,
+                "input_value": input_with_head, 
                 "current_state": timeline.state,
                 "head_x": timeline.input_tape.head_x,
                 "head_y": timeline.input_tape.head_y,
@@ -104,15 +118,17 @@ def step():
                 "history": timeline.history,
                 "status": status
             })
-        
+
+        print(memory_str)
         print(timelines_data)
 
         return jsonify({
             "timelines": timelines_data
         })
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
 
 
 @app.route("/diagram", methods=["POST"])

@@ -1,5 +1,5 @@
 body { 
-    font-family: Arial, sans-serif; 
+    font-family: monospace; 
     margin: 20px; 
     background-color: #2C2B2B; 
     color: #e0e0e0; 
@@ -70,6 +70,7 @@ label {
     white-space: pre-wrap;
     border-radius: 5px;
     margin-bottom: 30px;
+    font-size: 20px;
 }
 
 /* Ensures the text inside always has a top and bottom margin */
@@ -109,9 +110,10 @@ label {
 .memory-item{
     padding: 10px;
     height:100px;
-    min-height: 75px;
-    max-height:75px;
+    min-height: 100px;
+    max-height:100px;
     overflow: auto;
+    font-size: 18px;
 }
 
 .memory-container { 

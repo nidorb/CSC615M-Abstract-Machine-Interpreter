@@ -87,7 +87,9 @@ class Tape():
         return self.tape
     
     def view_ds(self):
-        return ''.join(self.tape)
+        tape_str = "".join(self.tape)
+        head_indicator = "‎ " * self.head_x + "⬆"
+        return f"{tape_str}\n{head_indicator}"
     
 class InputTape():
     def __init__(self, input_string: str):
@@ -192,7 +194,14 @@ class Tape2D():
         return self.tape
     
     def view_ds(self):
-        return "\n".join(["".join(row) for row in self.tape])
+        tape_str = ["".join(row) for row in self.tape] 
+        
+        head_indicator = "‎ " * self.head_x + "⬆"
+
+        if 0 <= self.head_y < len(tape_str):
+            tape_str.insert(self.head_y + 1, head_indicator)
+
+        return "\n".join(tape_str)
 
         
 class InputTape2D():

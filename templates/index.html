@@ -210,7 +210,7 @@
                     console.error("Parsing Error:", data.error);
                 } else {
                     editor.setValue(data.machine_definition || '');
-                    document.getElementById("inputBox").innerText = `#${data.input_value || ''}#`;
+                    document.getElementById("inputBox").innerText = `${data.input_value || ''}`;
                     document.getElementById("outputBox").innerText = data.output || '-';
                     document.getElementById("stateBox").innerText = data.initial_state || 'Unknown';
                     document.getElementById("stepBox").innerText = data.step_count || '0';

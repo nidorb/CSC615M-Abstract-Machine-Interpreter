@@ -273,6 +273,7 @@ class MachineSimulator:
         elif self.state == "reject":
             self.halt = True
         elif self.state not in self.logic:
+            self.state = "reject"
             self.halt = True
             
     def check_mark_tape(self, tape, command, element, replacement):
