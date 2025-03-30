@@ -77,11 +77,43 @@
     <script>
         let selectedBranchIndex = 0
         var defaultMachineDef = `.DATA\nTAPE T1\nTAPE T2\nTAPE T3\n.LOGIC\nA] RIGHT(T1) (a/a,B), (b/b,C)\nB] RIGHT(T2) (#/X,A)\nC] RIGHT(T2) (#/#,D)\nD] LEFT(T2) (X/#,E)\nE] RIGHT(T3) (#/X,F)\nF] RIGHT(T1) (b/b,E), (c/c,G)\nG] RIGHT(T3) (#/#,H)\nH] LEFT(T3) (X/#,I)\nI] RIGHT(T3) (c/c,H), (#/#,J)\nJ] LEFT(T2) (#/#,K)\nK] LEFT(T3) (#/#,accept)`;
+        CodeMirror.defineMode("customMachineLang", function() {
+            return {
+                token: function(stream, state) {
+                    if (stream.match(/^\.DATA|^\.LOGIC/)) {
+                        return "header"; // Orange for sections
+                    }
+                    if (stream.match(/(TAPE|STACK|QUEUE|2D_TAPE)\s(\w+)/)) {
+                        return "data-keyword"; // Blue for memory structures
+                    }
+                    if (stream.match(/\b(SCAN RIGHT|SCAN LEFT|PRINT|SCAN)\b/)) {
+                        return "logic-keyword"; // Green for machine logic
+                    }
+                    if (stream.match(/WRITE\(\w+\)|READ\(\w+\)/)) {
+                        return "ds-keyword"; // Green for machine logic
+                    }
+                    if (stream.match(/LEFT\(\w+\)|RIGHT\(\w+\)|UP\(\w+\)|DOWN\(\w+\)/)) {
+                        return "tape-keyword"; // Red for movement operations
+                    }
+                    if (stream.match(/\b\w+\]/)) {
+                        return "state"; // Highlight states
+                    }
+                    if (stream.match(/\([\w#\/, ]+\)/)) {
+                        return "transition"; // Highlight transition conditions
+                    }
+                    stream.next();
+                    return null;
+                }
+            };
+        });
     
         var editor = CodeMirror(document.getElementById("editor"), {
-            mode: null,
+            mode: "customMachineLang",
             lineNumbers: true,
+            theme: "monokai", // Adjust as needed
         });
+    
+        CodeMirror.defineMIME("text/x-customMachineLang", "customMachineLang");
     
         window.onload = function() {
             editor.setValue(defaultMachineDef);
@@ -153,9 +185,22 @@
                     branchSelect.innerHTML = ""; // Clear previous options
         
                     data.timelines.forEach((timeline, index) => {
+                        const status = timeline.status || "Unknown"; // Assuming status is provided in API response
                         const option = document.createElement("option");
+        
+                        let statusText = "";
+                        if (status === "Active") {
+                            statusText = "(Active)";
+                        } else if (status === "Rejected") {
+                            statusText = "(Rejected)";
+                        } else if (status === "Accepted") {
+                            statusText = "(Accepted)";
+                        } else {
+                            statusText = "(Unknown)";
+                        }
+        
                         option.value = index;
-                        option.textContent = `Branch ${index + 1}`;
+                        option.textContent = `${index + 1} ${statusText}`;
                         branchSelect.appendChild(option);
                     });
         

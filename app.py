@@ -58,6 +58,7 @@ def reset():
             "memory": memory_str,
             "step_count": machine.step_count,
             "history": machine.history,
+            "status": "Active"
         })
 
     
@@ -85,6 +86,13 @@ def step():
             else:
                 memory_str = {key: timeline.memory[key].view_ds() for key, value in machine.memory.items()}
             
+            if timeline.state == "accept":
+                status = "Accepted"
+            elif timeline.state == "reject":
+                status = "Rejected"
+            else:
+                status = "Active"
+            
             timelines_data.append({
                 "input_value": input_tape,
                 "current_state": timeline.state,
@@ -94,6 +102,7 @@ def step():
                 "memory": memory_str,
                 "step_count": timeline.step_count,
                 "history": timeline.history,
+                "status": status
             })
         
         print(timelines_data)

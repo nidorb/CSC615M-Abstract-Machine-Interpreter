@@ -6,22 +6,27 @@ from parser import MachineParser
 if __name__ == '__main__':
     machine_def = """
 .DATA
-QUEUE Q1
 STACK S1
 STACK S2
 .LOGIC
-A] WRITE(Q1) (X,A), (X,C)
-B] WRITE(Q1) (X,A), (X,C)
-C] READ(Q1) (X,D)
-D] WRITE(Q1) (Y,E)
-E] SCAN (b,C), (c,F)
-F] WRITE(Q1) (#,G)
-G] READ(Q1) (Y,H)
-H] SCAN (c,G), (#,I)
-I] READ(Q1) (#,accept)
+A] WRITE(S1) (#,B), (#,O)
+B] WRITE(S2) (#,C), (#,D)
+C] WRITE(S1) (X,D)
+D] READ(S1) (X,E), (#,G), (#,F)
+E] WRITE(S2) (X,F)
+F] SCAN (1,D)
+G] SCAN (1,H), (#,accept)
+H] WRITE(S1) (#,I)
+I] READ(S2) (X,J), (#,L)
+J] WRITE(S1) (X,I)
+L] WRITE(S2) (#,M)
+M] WRITE(S2) (X,N)
+N] WRITE(S2) (X,F)
+O] SCAN (#,P)
+P] READ(S1) (#,accept)
 """
 
-    input_tape = "abbcc"
+    input_tape = "1111"
     parser = MachineParser(machine_def, input_tape)
     StateDiagram(parser.logic, parser.initial_state)
     machine = MachineSimulator(machine_def, input_tape)

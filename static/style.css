@@ -351,3 +351,12 @@ select::-ms-expand {
     overflow-x: auto;
     overflow-y: hidden;
 }
+
+.CodeMirror { height: auto; border: 1px solid #ddd; font-size: 14px; }
+.cm-header { color: orange; font-weight: bold; }
+.cm-data-keyword { color: #24b8ab; font-weight: bold; }
+.cm-logic-keyword { color: #24b8ab; font-weight: bold; }
+.cm-ds-keyword { color: #24b8ab; font-weight: bold; }
+.cm-tape-keyword { color: #24b8ab; font-weight: bold; }
+.cm-state { color: #d7da30; font-weight: bold; }
+.cm-transition { color: #d7da30; }
