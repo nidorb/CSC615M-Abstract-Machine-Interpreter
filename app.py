@@ -98,7 +98,7 @@ def step():
                 head_indicator = " " * timeline.input_tape.head_x + "⬆"
                 input_with_head = f"{input_tape}\n{head_indicator}"
                 
-                memory_str = {key: timeline.memory[key].view_ds() for key, value in machine.memory.items()}
+            memory_str = {key: timeline.memory[key].view_ds() for key, value in machine.memory.items()}
                                                 
             if timeline.state == "accept":
                 status = "Accepted"

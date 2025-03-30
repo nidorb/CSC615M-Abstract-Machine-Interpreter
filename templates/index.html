@@ -195,6 +195,11 @@
         function resetCode() {
             const userInput = document.getElementById("inputField").value;
             const machineDefinition = editor.getValue();
+
+            if (runInterval) {
+                clearInterval(runInterval);
+                runInterval = null;
+            }
         
             fetch('/reset', {
                 method: 'POST',
