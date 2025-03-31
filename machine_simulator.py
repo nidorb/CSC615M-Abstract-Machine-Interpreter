@@ -82,7 +82,6 @@ class MachineSimulator:
                 for x in transitions:
                     for state in transitions[x]:
                         if x == firstkey and state == firststates[0]:
-                            print("skip", x, state)
                             continue
 
                         new_machine = copy.deepcopy(machine)

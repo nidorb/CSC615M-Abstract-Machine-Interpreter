@@ -119,9 +119,6 @@ def step():
                 "status": status
             })
 
-        print(memory_str)
-        print(timelines_data)
-
         return jsonify({
             "timelines": timelines_data
         })
