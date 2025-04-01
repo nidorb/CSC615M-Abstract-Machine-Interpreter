@@ -125,7 +125,7 @@
 
         function runCode() {
             if (runInterval) return; // Prevent multiple intervals
-
+        
             runInterval = setInterval(() => {
                 fetch('/step', {
                     method: 'POST',
@@ -140,37 +140,41 @@
                     } else {
                         const branchSelect = document.getElementById("branchSelect");
                         branchSelect.innerHTML = ""; // Clear previous options
-
+        
+                        let shouldStop = false;
                         data.timelines.forEach((timeline, index) => {
                             const status = timeline.status || "Unknown";
                             const option = document.createElement("option");
-
+        
                             let statusText = "";
                             if (status === "Active") statusText = "(Active)";
-                            else if (status === "Rejected") statusText = "(Rejected)";
-                            else if (status === "Accepted") statusText = "(Accepted)";
-                            else statusText = "(Unknown)";
-
+                            else if (status === "Rejected") {
+                                statusText = "(Rejected)";
+                            }
+                            else if (status === "Accepted") {
+                                statusText = "(Accepted)";
+                                shouldStop = true;
+                            } else statusText = "(Unknown)";
+        
                             option.value = index;
                             option.textContent = `${index + 1} ${statusText}`;
                             branchSelect.appendChild(option);
                         });
-
+        
                         if (selectedBranchIndex >= data.timelines.length) {
                             selectedBranchIndex = 0;
                         }
-
+        
                         branchSelect.value = selectedBranchIndex;
-
+        
                         branchSelect.onchange = function () {
                             selectedBranchIndex = parseInt(branchSelect.value);
                             updateState(data.timelines[selectedBranchIndex]);
                         };
-
+        
                         updateState(data.timelines[selectedBranchIndex]);
-
-                        if (data.timelines[selectedBranchIndex].status === "Accepted" || 
-                            data.timelines[selectedBranchIndex].status === "Rejected") {
+        
+                        if (shouldStop) {
                             clearInterval(runInterval);
                             runInterval = null;
                         }
@@ -183,6 +187,7 @@
                 });
             }, 150);
         }
+        
 
         document.getElementById("Stop").addEventListener("click", () => {
             if (runInterval) {
