@@ -150,6 +150,9 @@ class MachineParser:
                     elif self.memory[arg].__class__.__name__ not in {"Tape", "Tape2D"}:
                         print(f"Error: Memory object is not a Tape at line {line_number}: {line}")
                         exit(1)
+                elif self.input_tape.__class__.__name__ == "InputTape" and command in {"UP", "DOWN"}:
+                    print(f"Error: Memory object is not a 2D Tape at line {line_number}: {line}")
+                    exit(1)
             
             #initializes first line as initial state
             if self.initial_state is None:
