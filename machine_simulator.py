@@ -38,6 +38,12 @@ class MachineSimulator:
                         
             if command in {"SCAN", "SCAN RIGHT", "SCAN LEFT"}:
                 if command == "SCAN LEFT":
+                    print(machine.input_tape.get_next_element("LEFT"))
+                    if machine.input_tape.get_next_element("LEFT") not in transitions:
+                        machine.halt = True
+                        machine.history.append("reject")
+                        machine.state = "reject"
+                        continue
                     if not machine.input_tape.can_move("LEFT"):
                         machine.input_tape.add_left()
                         # machine.halt = True
@@ -47,11 +53,19 @@ class MachineSimulator:
                     machine.input_tape.move_head("LEFT")
                     
                 else:
+                    print(machine.input_tape.get_next_element("RIGHT"))
+                    if machine.input_tape.get_next_element("RIGHT") not in transitions:
+                        machine.halt = True
+                        machine.history.append("reject")
+                        machine.state = "reject"
+                        continue
                     if not machine.input_tape.can_move("RIGHT"): #checks if tape is at #
                         machine.input_tape.add_right()     
                     machine.input_tape.move_head("RIGHT")
                     
                 element = machine.input_tape.get_element()
+                print(element)
+                
                             
                 #checks all dest state of element
                 if element in transitions:
@@ -148,6 +162,11 @@ class MachineSimulator:
                     tape = machine.memory[memory_object]
 
                 if command == "LEFT":
+                    if tape.get_next_element("LEFT") not in transitions:
+                        machine.halt = True
+                        machine.history.append("reject")
+                        machine.state = "reject"
+                        continue
                     if not tape.can_move("LEFT"): #checks if tape is at #
                         tape.add_left()
                         # machine.halt = True
@@ -157,6 +176,12 @@ class MachineSimulator:
                     tape.move_head("LEFT")
                                     
                 elif command == "RIGHT":
+                    if  tape.get_next_element("RIGHT") not in transitions:
+                        machine.halt = True
+                        print("reject")
+                        machine.history.append("reject")
+                        machine.state = "reject"
+                        continue
                     if not tape.can_move("RIGHT"): #checks if tape is at #
                         tape.add_right()       
                     tape.move_head("RIGHT")
@@ -210,12 +235,23 @@ class MachineSimulator:
                     tape = machine.memory[memory_object]
                     
                 if command == "UP":
+                    if tape.get_next_element("UP") not in transitions:
+                        machine.halt = True
+                        machine.history.append("reject")
+                        machine.state = "reject"
+                        print("in reject")
+                        continue
                     if not tape.can_move("UP"): #checks if tape is at #
                         tape.add_up()
                     tape.move_head("UP")
                     
                                     
                 elif command == "DOWN":
+                    if tape.get_next_element("DOWN") not in transitions:
+                        machine.halt = True
+                        machine.history.append("reject")
+                        machine.state = "reject"
+                        continue
                     if not tape.can_move("DOWN"): #checks if tape is at #
                         tape.add_down()       
                     tape.move_head("DOWN")

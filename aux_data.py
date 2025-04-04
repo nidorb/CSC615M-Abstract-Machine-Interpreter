@@ -61,6 +61,16 @@ class Tape():
     def get_element(self):
         return self.tape[self.head_x]
     
+    def get_next_element(self, command):
+        if command == "RIGHT":
+            if self.head_x == len(self.tape) - 1:
+                return "#"
+            return self.tape[self.head_x + 1]
+        elif command == "LEFT":
+            if self.head_x == 0:
+                return "#"
+            return self.tape[self.head_x - 1]
+    
     def add_right(self):
         self.tape.append('#')
     
@@ -103,6 +113,16 @@ class InputTape():
     
     def get_element(self):
         return self.tape[self.head_x]
+
+    def get_next_element(self, command):
+        if command == "RIGHT":
+            if self.head_x == len(self.tape) - 1:
+                return "#"
+            return self.tape[self.head_x + 1]
+        elif command == "LEFT":
+            if self.head_x == 0:
+                return "#"
+            return self.tape[self.head_x - 1]
     
     def add_right(self):
         self.tape.append('#')
@@ -169,6 +189,24 @@ class Tape2D():
     
     def get_element(self):
         return self.tape[self.head_y][self.head_x]
+    
+    def get_next_element(self, command):
+        if command == "RIGHT":
+            if self.head_x == len(self.tape[self.head_y]) - 1:
+                return "#"
+            return self.tape[self.head_y][self.head_x + 1]
+        elif command == "LEFT":
+            if self.head_x == 0:
+                return "#"
+            return self.tape[self.head_y][self.head_x - 1]
+        elif command == "UP":
+            if self.head_y == 0:
+                return "#"
+            return self.tape[self.head_y - 1][self.head_x]
+        elif command == "DOWN":
+            if self.head_y == len(self.tape) - 1:
+                return "#"
+            return self.tape[self.head_y + 1][self.head_x]
     
     def add_up(self):
         self.tape.insert(0, ['#']*len(self.tape[self.head_y]))
@@ -240,6 +278,24 @@ class InputTape2D():
     
     def get_element(self):
         return self.tape[self.head_y][self.head_x]
+
+    def get_next_element(self, command):
+        if command == "RIGHT":
+            if self.head_x == len(self.tape[self.head_y]) - 1:
+                return "#"
+            return self.tape[self.head_y][self.head_x + 1]
+        elif command == "LEFT":
+            if self.head_x == 0:
+                return "#"
+            return self.tape[self.head_y][self.head_x - 1]
+        elif command == "UP":
+            if self.head_y == 0:
+                return "#"
+            return self.tape[self.head_y - 1][self.head_x]
+        elif command == "DOWN":
+            if self.head_y == len(self.tape) - 1:
+                return "#"
+            return self.tape[self.head_y + 1][self.head_x]
     
     def add_up(self):
         self.tape.insert(0, ['#']*len(self.tape[self.head_y]))

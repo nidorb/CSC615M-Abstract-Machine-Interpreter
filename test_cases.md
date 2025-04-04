@@ -1,7 +1,7 @@
 ### 1-Way GST Machine
 #### Machine Definition:
 .LOGIC
-A] SCAN (0,B), (1,C), (#,reject)
+A] SCAN (0,B), (1,C), (#,halt)
 B] SCAN (#,reject), (0,F), (1,E)
 C] SCAN (#,reject), (0,G), (1,H)
 E] PRINT (Y,C)
@@ -207,3 +207,5 @@ AU] READ(Q1) (X,reject), (#,accept)
 
 #### Test Cases:
 Accepted:  L = {ω ∈ {0, 1}∗| ω = 0n1m ∧ n, m ≥ 1 ∧ gcd(n, m) = 1}
+
+

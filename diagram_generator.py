@@ -9,7 +9,7 @@ class StateDiagram:
             "SCAN LEFT": "SL",
             "SCAN RIGHT": "SR",
             "PRINT": "P",
-            "READ": "R",
+            "READ": "Rd",
             "WRITE": "W",
             "LEFT": "L",
             "RIGHT": "R",
