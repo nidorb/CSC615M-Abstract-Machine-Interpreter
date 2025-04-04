@@ -208,4 +208,35 @@ AU] READ(Q1) (X,reject), (#,accept)
 #### Test Cases:
 Accepted:  L = {ω ∈ {0, 1}∗| ω = 0n1m ∧ n, m ≥ 1 ∧ gcd(n, m) = 1}
 
+### 1 way 2 stack PDA
+.DATA
+STACK S1
+STACK S2
+.LOGIC
+A] WRITE(S1) (#,B)
+B] WRITE(S2) (#,C)
+C] SCAN RIGHT (0,D)
+D] WRITE(S1) (X,E)
+E] SCAN RIGHT (0,D), (1,F)
+F] READ(S1) (X,G)
+G] WRITE(S2) (X,H)
+H] SCAN RIGHT (1,F), (0,I)
+I] SCAN RIGHT (0,J)
+J] READ(S1) (#,K)
+K] WRITE(S1) (#,L)
+L] READ(S2) (X,M)
+M] WRITE(S1) (X,N)
+N] SCAN RIGHT (1,P), (0,O)
+O] SCAN RIGHT (0,L)
+P] SCAN RIGHT (1,Q)
+Q] READ(S2) (#,R)
+R] WRITE(S2) (#,S)
+S] READ(S1) (X,T)
+T] SCAN RIGHT (1,U), (#,V)
+U] SCAN RIGHT (1,S)
+V] SCAN RIGHT (#,W)
+W] READ(S1) (#,X)
+X] READ(S2) (#,accept)
 
+#### Test Cases:
+{ω ∈ {0, 1}∗| ω = 0^n 1^n 0^2n 1^2n, n ≥ 1}
