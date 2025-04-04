@@ -11,6 +11,19 @@
 </head>
 <body>
     <h1>Abstract Machine Interpreter</h1>
+
+    <button id="infoButton" class="info-button" onclick="openInfoModal()">i</button>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeInfoModal()">&times;</button>
+            <h2>About Abstract Machine Interpreter</h2>
+            <p>This tool allows you to define and execute an abstract machine with multiple memory structures like tapes and stacks. You can step through execution, run automatically, and visualize machine states.</p>
+        </div>
+    </div>
+    
+
+
     <div class="container">
         <div class="input-container">
             <label for="inputBox">Input:</label>
@@ -61,8 +74,8 @@
                 <button id="Reset" onclick="resetCode()">Reset</button>
                 <button id="Diagram" onclick="showDiagram()">Show State Diagram</button>
             
-                <div id="diagramModal" class="modal">
-                    <div class="modal-content">
+                <div id="diagramModal" class="modalDiagram">
+                    <div class="modal-diagram-content">
                         <span class="close" onclick="closeDiagram()">&times;</span>
                         <img src="{{ url_for('static', filename='state_diagram.png') }}" alt="State Diagram">
                     </div>
@@ -344,7 +357,6 @@
             });
         }
         
-        
 
         function formatHistory(history) {
             if (!history.length) return '-';
@@ -385,6 +397,15 @@
                 modal.style.display = "none";
             }
         }
+
+        function openInfoModal() {
+            document.getElementById("infoModal").style.display = "block";
+        }
+        
+        function closeInfoModal() {
+            document.getElementById("infoModal").style.display = "none";
+        }
+        
     </script>
 </body>
 </html>
