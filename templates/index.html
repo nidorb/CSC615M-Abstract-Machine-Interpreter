@@ -16,11 +16,63 @@
 
     <div id="infoModal" class="modal">
         <div class="modal-content">
-            <button class="close" onclick="closeInfoModal()">&times;</button>
             <h2>About Abstract Machine Interpreter</h2>
-            <p>This tool allows you to define and execute an abstract machine with multiple memory structures like tapes and stacks. You can step through execution, run automatically, and visualize machine states.</p>
+    
+            <h3>1. Project Overview</h3>
+            <p>Develop an interpreter that simulates various abstract computation models using different memory structures and execution logic <strong>e.g.(Turing Machines, NFA, GST, PDA, etc.)</strong>.</p>
+    
+            <h3>2. Input Structure</h3>
+    
+            <h4>2.1 Auxiliary Memory (.DATA Section)</h4>
+            <ul>
+                <li><strong>STACK &lt;name&gt;</strong> → LIFO memory.</li>
+                <li><strong>QUEUE &lt;name&gt;</strong> → FIFO memory.</li>
+                <li><strong>TAPE &lt;name&gt;</strong> → 1D Turing machine tape (input tape if first declared).</li>
+                <li><strong>2D_TAPE &lt;name&gt;</strong> → 2D Turing machine tape (input on the top row if first declared).</li>
+            </ul>
+    
+            <h4>2.2 Logic Definition (.LOGIC Section)</h4>
+            <p>Each state’s behavior follows the format:</p>
+            <pre><code>&lt;SOURCE_STATE&gt;] COMMAND (&lt;SYMBOL_1&gt;,&lt;DESTINATION_STATE_1&gt;), (&lt;SYMBOL_2&gt;,&lt;DESTINATION_STATE_2&gt;), ...</code></pre>
+    
+            <h4>Commands:</h4>
+            <ul>
+                <li><strong>SCAN</strong> → Reads input symbol.</li>
+                <li><strong>PRINT</strong> → Outputs a symbol.</li>
+                <li><strong>SCAN RIGHT/LEFT</strong> → Reads symbol and moves the tape head accordingly.</li>
+                <li><strong>READ(&lt;memory&gt;)</strong> → Reads symbol from stack/queue.</li>
+                <li><strong>WRITE(&lt;memory&gt;)</strong> → Writes symbol to stack/queue.</li>
+            </ul>
+
+            <h4>Tape Commands:</h4>
+            <p>tape commands has its own unique format: </p>
+            <pre><code>&lt;SOURCE_STATE&gt;] COMMAND (&lt;SYMBOL_1&gt;/&lt;REPLACEMENT_SYMBOL_1&gt;,&lt;DESTINATION_STATE_1&gt;), (&lt;SYMBOL_2&gt;/&lt;REPLACEMENT_SYMBOL_2&gt;,&lt;DESTINATION_STATE_2&gt;), ...</code></pre>
+            <h4>Commands:</h4>
+            <ul>
+                <li><strong>RIGHT/LEFT(&lt;tape&gt;)</strong> → Moves right/left, replaces symbol, and changes state.</li>
+                <li><strong>UP/DOWN(&lt;2D_tape&gt;)</strong> → Moves up/down, replaces symbol, and changes state.</li>
+            </ul>
+    
+            <h4>Special States:</h4>
+            <ul>
+                <li><strong>accept</strong> → Halts and accepts input.</li>
+                <li><strong>reject</strong> → Halts and rejects input.</li>
+            </ul>
+
+            <h3>3. Running the Program</h3>
+            <ul>
+                <li><strong>Reset</strong> → compiles the machine</li>
+                <li><strong>Run</strong> → executes the machine</li>
+                <li><strong>Stop</strong> → pauses the execution</li>
+                <li><strong>Branches</strong> → dropdown of timelines</li>
+                <li><strong>Step</strong> → next step of execution</li>
+                <li><strong>Show state diagram</strong> → displays state diagram of machine defintion</li>
+                <li><strong>Note: </strong>The application assumes that the machine definition is valid</li>
+            </ul>
+
         </div>
     </div>
+    
     
 
 
@@ -405,6 +457,12 @@
         function closeInfoModal() {
             document.getElementById("infoModal").style.display = "none";
         }
+        window.onclick = function(event) {
+            let modal = document.getElementById("infoModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
         
     </script>
 </body>
